@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>RTCM3</Title>
+    <Authors>uuiitwp</Authors>
+    <Company>uuiitwp</Company>
+    <PackageProjectUrl>https://github.com/uuiitwp/RTCM3</PackageProjectUrl>
+    <Description>RTCM3 decoder/encoder</Description>
+  </PropertyGroup>
+
+</Project>
