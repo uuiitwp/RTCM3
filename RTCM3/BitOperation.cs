@@ -99,15 +99,7 @@
         }
         public static void SetBitsLong(ref Memory<byte> buff, int pos, int length, long data)
         {
-            if (data < 0)
-            {
-                data |= 1L << (length - 1);
-            }
-            else
-            {
-                data &= ~(1L << (length - 1));
-            }
-            SetBitsUlong(ref buff, pos, length, (ulong)data);
+            SetBitsUlong(ref buff, pos, length, data < 0 ? (ulong)(data |= 1L << (length - 1)) : (ulong)(data &= ~(1L << (length - 1))));
         }
     }
 }
