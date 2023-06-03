@@ -31,12 +31,9 @@ namespace RTCM3
             {
                 throw new InvalidCastException($"invalid data bytes length:{DataBytesLength}");
             }
-            if (checkCRC24Q)
+            if (checkCRC24Q && (!ValidCRC24Q(bytes)))
             {
-                if (!ValidCRC24Q(bytes))
-                {
-                    throw new InvalidCastException("invalid CRC24Q");
-                }
+                throw new InvalidCastException("invalid CRC24Q");
             }
             MessageType = BitOperation.GetBitsUint(bytes, 24, 12);
             if (decode)
