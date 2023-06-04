@@ -47,7 +47,7 @@ namespace TestRTCM3
                         bool? f = a?.SequenceEqual(b);
                         if (f is null)
                         {
-                            Console.WriteLine($"skip RTCM3 {message.MessageType}");
+                            Console.WriteLine($"skip RTCM3 {message.MessageType}: Unsupported message type");
                         }
                         else if (f == true)
                         {
@@ -58,7 +58,7 @@ namespace TestRTCM3
                     }
                     catch (NotImplementedException)
                     {
-                        Console.WriteLine($"skip RTCM3 {message.MessageType}");
+                        Console.WriteLine($"skip RTCM3 {message.MessageType}: NotImplementedException");
                         continue;
                     }
                 }
@@ -72,7 +72,7 @@ namespace TestRTCM3
         {
             foreach (FileInfo file in GetFiles())
             {
-                SyncMSMFilter Filter = new SyncMSMFilter();
+                SyncMSMFilter Filter = new();
                 byte[] bs = File.ReadAllBytes(file.FullName);
                 ReadOnlySequence<byte> rs = new(bs);
                 while (true)
