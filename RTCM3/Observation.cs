@@ -1,10 +1,12 @@
 ﻿using RTCM3.Common;
+using RTCM3.Common.Time;
 
 namespace RTCM3
 {
     public struct Observation
     {
         public GNSSSystem GNSSSystem;
+        public GNSSTime GNSSTime;
         public int satId;
         public int sigId;
         public uint cnr;
@@ -13,5 +15,11 @@ namespace RTCM3
         public double pseudoRange;
         public double carrierPhase;
         public double doppler;
+
+
+        public readonly override string ToString()
+        {
+            return $"{GNSSSystemMethod.GetGNSSSystemChar(GNSSSystem)}{satId:00} CNR={cnr:00}";
+        }
     }
 }

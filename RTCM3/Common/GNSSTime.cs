@@ -1,17 +1,42 @@
-﻿namespace RTCM3.Common.Time
-{
+﻿using System;
 
-    public static class Constant
+namespace RTCM3.Common.Time
+{
+    public static class StartTime
     {
         public static readonly DateTime GPS_START_TIME = new(1980, 1, 6);
         public static readonly DateTime GALILEO_START_TIME = new(1999, 8, 22);
         public static readonly DateTime BEIDOU_START_TIME = new(2006, 1, 1);
+
+        public static DateTime GetStartTime(GNSSSystem sys)
+        {
+            return sys switch
+            {
+                GNSSSystem.GPS => GPS_START_TIME,
+                GNSSSystem.GALILEO => GALILEO_START_TIME,
+                GNSSSystem.BEIDOU => BEIDOU_START_TIME,
+                GNSSSystem.SBAS => GPS_START_TIME,
+                GNSSSystem.QZSS => GPS_START_TIME,
+                _ => throw new UnsupportedGNSSSystem(sys),
+            };
+        }
     }
 
     public struct GNSSTime : IComparable<GNSSTime>
     {
-        public DateTime DateTime; // see https://learn.microsoft.com/en-us/dotnet/api/system.datetime
-        public double NanoSecond; // nano second under 100
+        /// <summary>
+        /// see https://learn.microsoft.com/en-us/dotnet/api/system.datetime
+        /// </summary>
+        public DateTime DateTime;
+        /// <summary>
+        /// nano second under 100
+        /// </summary>
+        public double NanoSecond;
+
+        /// <summary>
+        /// UTC
+        /// </summary>
+        public static DateTime? ReferenceTime { get; set; }
 
         internal GNSSTime(DateTime dateTime)
         {
@@ -19,13 +44,43 @@
             NanoSecond = 0;
         }
 
-        public static GNSSTime FromGPSTime(int week, double sec)
+        public readonly void GetWeekAndTow(GNSSSystem sys, out int week, out double tow)
         {
-            int intsec = (int)sec;
-            double tick = (sec - intsec) * Physics.SecondToTick;
+            var start = StartTime.GetStartTime(sys);
+            var dt = (DateTime - start).TotalSeconds;
+            week = (int)(dt / Physics.Week);
+            tow = dt % Physics.Week + NanoSecond / Physics.NanoSecond;
+        }
+
+        public readonly override string ToString()
+        {
+            return $"{DateTime:yyyy/MM/dd HH:mm:ss.fffffff} +NanoSecond={NanoSecond} LeapSecond={GetLeapSecond()}";
+        }
+
+        public static GNSSTime FromWeekAndTow(GNSSSystem sys, int week, double tow)
+        {
+            int intsec = (int)tow;
+            double tick = (tow - intsec) * Physics.Tick;
             long longtick = (long)tick;
-            DateTime dateTime = Constant.GPS_START_TIME.AddDays(week * 7).AddSeconds(intsec).AddTicks(longtick);
+            var start = StartTime.GetStartTime(sys);
+            intsec = sys == GNSSSystem.BEIDOU ? intsec + 14 : intsec;
+            DateTime dateTime = start.AddDays(week * 7).AddSeconds(intsec).AddTicks(longtick);
             return new GNSSTime() { DateTime = dateTime, NanoSecond = (tick - longtick) * 100 };
+        }
+
+        public static GNSSTime FromTow(GNSSSystem sys, double tow)
+        {
+            var gt = (ReferenceTime ?? DateTime.UtcNow).ToGNSSTime();
+            gt.GetWeekAndTow(sys, out int _week, out double _tow);
+            if (tow < _tow - Physics.Week / 2)
+            {
+                tow += Physics.Week;
+            }
+            else if (tow > _tow + Physics.Week / 2)
+            {
+                tow -= Physics.Week;
+            }
+            return FromWeekAndTow(sys, _week, tow);
         }
 
         public readonly int CompareTo(GNSSTime obj)
@@ -57,6 +112,29 @@
         {
             return left.CompareTo(right) >= 0;
         }
+
+        public static GNSSTime operator +(GNSSTime left, int right)
+        {
+            return new GNSSTime() { DateTime = left.DateTime.AddSeconds(right), NanoSecond = left.NanoSecond };
+        }
+
+        public readonly int GetLeapSecond()
+        {
+            var leapseconds = LeapSecond.LeapSecondData;
+            int result = 0;
+            foreach (Tuple<DateTime, int> item in leapseconds)
+            {
+                if (DateTime.AddSeconds(-item.Item2) >= item.Item1)
+                {
+                    result = item.Item2;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return result;
+        }
     }
 
     public static class LeapSecond
@@ -82,15 +160,10 @@
             { new Tuple<DateTime,int>(new DateTime(2015,7,1) ,17) },
             { new Tuple<DateTime,int>(new DateTime(2017,1,1) ,18) },
         };
-        public static List<Tuple<DateTime, int>> GetData => data;
+        public static List<Tuple<DateTime, int>> LeapSecondData => data;
         public static int GetLeapSecond(this DateTime dateTime)
         {
-            DateTime first = data[0].Item1;
             int result = 0;
-            if (dateTime < first)
-            {
-                return result;
-            }
             foreach (Tuple<DateTime, int> item in data)
             {
                 if (dateTime >= item.Item1)
@@ -107,7 +180,8 @@
 
         public static GNSSTime ToGNSSTime(this DateTime dateTime)
         {
-            return new GNSSTime(dateTime.AddSeconds(dateTime.GetLeapSecond()));
+            var ls = dateTime.GetLeapSecond();
+            return new GNSSTime(dateTime.AddSeconds(ls));
         }
     }
 }

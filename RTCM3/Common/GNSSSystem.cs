@@ -1,5 +1,10 @@
 ﻿namespace RTCM3.Common
 {
+    public class UnsupportedGNSSSystem : Exception
+    {
+        public UnsupportedGNSSSystem(GNSSSystem GNSSSystem) : base($"{GNSSSystem} is not supported") { }
+    }
+
     [Flags]
     public enum GNSSSystem
     {
@@ -24,7 +29,8 @@
                 GNSSSystem.BEIDOU => 'C',
                 GNSSSystem.QZSS => 'J',
                 GNSSSystem.IRNSS => 'I',
-                _ => throw new InvalidCastException($"{GNSSSystem} is not supported"),
+                GNSSSystem.SBAS => 'S',
+                _ => throw new UnsupportedGNSSSystem(GNSSSystem),
             };
         }
     }
