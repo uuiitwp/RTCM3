@@ -2,7 +2,7 @@ using RTCM3;
 using RTCM3.Common.Time;
 using RTCM3.RTCM3Message;
 using System.Buffers;
-using System.Security.Cryptography;
+
 
 
 namespace TestRTCM3
@@ -31,7 +31,7 @@ namespace TestRTCM3
                     SequencePosition end = rs1.Start;
                     byte[] b = rs2.Slice(start, end).ToArray();
                     rs2 = rs2.Slice(end);
-                    if(rs1.IsEmpty || rs2.IsEmpty)
+                    if (rs1.IsEmpty || rs2.IsEmpty)
                     {
                         break;
                     }
@@ -72,7 +72,7 @@ namespace TestRTCM3
         {
             foreach (FileInfo file in GetFiles())
             {
-                var Filter = new SyncMSMFilter();
+                SyncMSMFilter Filter = new SyncMSMFilter();
                 byte[] bs = File.ReadAllBytes(file.FullName);
                 ReadOnlySequence<byte> rs = new(bs);
                 while (true)
@@ -81,11 +81,11 @@ namespace TestRTCM3
                     {
                         break;
                     }
-                    var msms = Filter.Filter(ref rs);
+                    RTCM3.RTCM3[]? msms = Filter.Filter(ref rs);
                     if (msms is not null)
                     {
                         Assert.AreEqual((msms.Last().Databody as RTCM3_MSM)?.Sync, 0u);
-                        foreach(var msm in msms[..^1])
+                        foreach (RTCM3.RTCM3 msm in msms[..^1])
                         {
                             Assert.AreEqual((msm.Databody as RTCM3_MSM)?.Sync, 1u);
                         }

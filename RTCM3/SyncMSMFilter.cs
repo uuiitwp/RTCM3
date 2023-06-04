@@ -13,13 +13,13 @@ namespace RTCM3
         }
         public RTCM3[]? Filter(ref ReadOnlySequence<byte> buffer)
         {
-            var m = RTCM3.Filter(ref buffer);
+            RTCM3? m = RTCM3.Filter(ref buffer);
             if (m != null && m.Databody is RTCM3_MSM msm)
             {
                 MSMs.Add(m);
                 if (msm.Sync == 0u)
                 {
-                    var result = MSMs.ToArray();
+                    RTCM3[] result = MSMs.ToArray();
                     MSMs = new(InitLength);
                     return result;
                 }

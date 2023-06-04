@@ -1,5 +1,5 @@
-﻿using System.Text;
-using RTCM3.Common;
+﻿using RTCM3.Common;
+using System.Text;
 
 namespace RTCM3.RTCM3Message
 {
