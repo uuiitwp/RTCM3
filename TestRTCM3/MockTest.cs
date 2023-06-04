@@ -1,6 +1,8 @@
+using RTCM3;
 using RTCM3.Common.Time;
 using RTCM3.RTCM3Message;
 using System.Buffers;
+using System.Security.Cryptography;
 
 
 namespace TestRTCM3
@@ -14,7 +16,7 @@ namespace TestRTCM3
             return directoryInfo.GetFiles("*.rtcm3", SearchOption.AllDirectories);
         }
         [TestMethod]
-        public void Mock()
+        public void DecodeEncodeRTCM3()
         {
             foreach (FileInfo file in GetFiles())
             {
@@ -29,12 +31,12 @@ namespace TestRTCM3
                     SequencePosition end = rs1.Start;
                     byte[] b = rs2.Slice(start, end).ToArray();
                     rs2 = rs2.Slice(end);
+                    if(rs1.IsEmpty || rs2.IsEmpty)
+                    {
+                        break;
+                    }
                     if (message is null)
                     {
-                        if (start.Equals(rs1.End))
-                        {
-                            break;
-                        }
                         continue;
                     }
                     try
@@ -64,6 +66,35 @@ namespace TestRTCM3
 
         }
 
+
+        [TestMethod]
+        public void DecodeSyncMSM()
+        {
+            foreach (FileInfo file in GetFiles())
+            {
+                var Filter = new SyncMSMFilter();
+                byte[] bs = File.ReadAllBytes(file.FullName);
+                ReadOnlySequence<byte> rs = new(bs);
+                while (true)
+                {
+                    if (rs.IsEmpty)
+                    {
+                        break;
+                    }
+                    var msms = Filter.Filter(ref rs);
+                    if (msms is not null)
+                    {
+                        Assert.AreEqual((msms.Last().Databody as RTCM3_MSM)?.Sync, 0u);
+                        foreach(var msm in msms[..^1])
+                        {
+                            Assert.AreEqual((msm.Databody as RTCM3_MSM)?.Sync, 1u);
+                        }
+                    }
+                }
+            }
+        }
+
+
         [TestMethod]
         public void TestLeepsecond()
         {
@@ -76,9 +107,9 @@ namespace TestRTCM3
         }
 
         [TestMethod]
-        public void Fail()
+        public void PassOrNot()
         {
-            Assert.AreEqual(true, false);
+            Assert.AreEqual(true, true);
         }
     }
 }

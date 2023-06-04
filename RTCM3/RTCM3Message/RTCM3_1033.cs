@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using RTCM3.Common;
 
 namespace RTCM3.RTCM3Message
 {

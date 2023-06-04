@@ -1,4 +1,4 @@
-﻿namespace RTCM3
+﻿namespace RTCM3.Common
 {
     public static class BitOperation
     {
@@ -11,7 +11,7 @@
             }
             for (int i = pos; i < pos + length; i++)
             {
-                result = (result << 1) + (((uint)buff[i / 8] >> (7 - (i % 8))) & 1u);
+                result = (result << 1) + ((uint)buff[i / 8] >> 7 - i % 8 & 1u);
             }
             return result;
         }
@@ -25,7 +25,7 @@
         public static void SetBitsUint(ref Memory<byte> memory, int pos, int length, uint data)
         {
             Span<byte> buff = memory.Span;
-            uint mask = 1u << (length - 1);
+            uint mask = 1u << length - 1;
             if (length > 32 || buff.Length * 8 < pos + length)
             {
                 throw new IndexOutOfRangeException();
@@ -34,28 +34,28 @@
             {
                 if ((data & mask) > 0)
                 {
-                    buff[i / 8] |= (byte)(1u << (7 - (i % 8)));
+                    buff[i / 8] |= (byte)(1u << 7 - i % 8);
                 }
                 else
                 {
-                    buff[i / 8] &= (byte)~(1u << (7 - (i % 8)));
+                    buff[i / 8] &= (byte)~(1u << 7 - i % 8);
                 }
             }
         }
         public static int GetBitsInt(ReadOnlySpan<byte> buff, int pos, int length)
         {
             uint result = GetBitsUint(buff, pos, length);
-            return length <= 0 || 32 <= length || 0 == (result & (1u << (length - 1))) ? (int)result : (int)(result | (~0u << length));
+            return length <= 0 || 32 <= length || 0 == (result & 1u << length - 1) ? (int)result : (int)(result | ~0u << length);
         }
         public static void SetBitsInt(ref Memory<byte> buff, int pos, int length, int data)
         {
             if (data < 0)
             {
-                data |= 1 << (length - 1);
+                data |= 1 << length - 1;
             }
             else
             {
-                data &= ~(1 << (length - 1));
+                data &= ~(1 << length - 1);
             }
             SetBitsUint(ref buff, pos, length, (uint)data);
         }
@@ -68,13 +68,13 @@
             }
             for (int i = pos; i < pos + length; i++)
             {
-                result = (result << 1) + (((ulong)buff[i / 8] >> (7 - (i % 8))) & 1ul);
+                result = (result << 1) + ((ulong)buff[i / 8] >> 7 - i % 8 & 1ul);
             }
             return result;
         }
         public static void SetBitsUlong(ref Memory<byte> memory, int pos, int length, ulong data)
         {
-            ulong mask = 1ul << (length - 1);
+            ulong mask = 1ul << length - 1;
             Span<byte> buff = memory.Span;
             if (length > 64 || buff.Length * 8 < pos + length)
             {
@@ -84,22 +84,22 @@
             {
                 if ((data & mask) > 0)
                 {
-                    buff[i / 8] |= (byte)(1u << (7 - (i % 8)));
+                    buff[i / 8] |= (byte)(1u << 7 - i % 8);
                 }
                 else
                 {
-                    buff[i / 8] &= (byte)~(1u << (7 - (i % 8)));
+                    buff[i / 8] &= (byte)~(1u << 7 - i % 8);
                 }
             }
         }
         public static long GetBitsLong(ReadOnlySpan<byte> buff, int pos, int length)
         {
             ulong result = GetBitsUlong(buff, pos, length);
-            return length <= 0 || 64 <= length || 0 == (result & (1ul << (length - 1))) ? (long)result : (long)(result | (~0ul << length));
+            return length <= 0 || 64 <= length || 0 == (result & 1ul << length - 1) ? (long)result : (long)(result | ~0ul << length);
         }
         public static void SetBitsLong(ref Memory<byte> buff, int pos, int length, long data)
         {
-            SetBitsUlong(ref buff, pos, length, data < 0 ? (ulong)(data |= 1L << (length - 1)) : (ulong)(data &= ~(1L << (length - 1))));
+            SetBitsUlong(ref buff, pos, length, data < 0 ? (ulong)(data |= 1L << length - 1) : (ulong)(data &= ~(1L << length - 1)));
         }
     }
 }

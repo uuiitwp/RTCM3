@@ -1,4 +1,4 @@
-﻿namespace RTCM3
+﻿namespace RTCM3.Common
 {
     public class CRC24Q
     {
@@ -40,7 +40,7 @@
             int crc = 0;
             for (int i = 0; i < vs.Length; i++)
             {
-                crc = ((crc << 8) & 0xFFFFFF) ^ TABLE_CRC24Q[(crc >> 16) ^ vs[i]];
+                crc = crc << 8 & 0xFFFFFF ^ TABLE_CRC24Q[crc >> 16 ^ vs[i]];
             }
             return crc;
         }

@@ -1,4 +1,6 @@
-﻿namespace RTCM3.RTCM3Message
+﻿using RTCM3.Common;
+
+namespace RTCM3.RTCM3Message
 {
     public class RTCM3_1230 : RTCM3Base
     {
