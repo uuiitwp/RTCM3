@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace RTCM3.Common.Time
+﻿namespace RTCM3.Common.Time
 {
     public static class StartTime
     {
@@ -46,8 +44,8 @@ namespace RTCM3.Common.Time
 
         public readonly void GetWeekAndTow(GNSSSystem sys, out int week, out double tow)
         {
-            var start = StartTime.GetStartTime(sys);
-            var dt = (DateTime - start).TotalSeconds;
+            DateTime start = StartTime.GetStartTime(sys);
+            double dt = (DateTime - start).TotalSeconds;
             week = (int)(dt / Physics.Week);
             tow = dt % Physics.Week + NanoSecond / Physics.NanoSecond;
         }
@@ -62,7 +60,7 @@ namespace RTCM3.Common.Time
             int intsec = (int)tow;
             double tick = (tow - intsec) * Physics.Tick;
             long longtick = (long)tick;
-            var start = StartTime.GetStartTime(sys);
+            DateTime start = StartTime.GetStartTime(sys);
             intsec = sys == GNSSSystem.BEIDOU ? intsec + 14 : intsec;
             DateTime dateTime = start.AddDays(week * 7).AddSeconds(intsec).AddTicks(longtick);
             return new GNSSTime() { DateTime = dateTime, NanoSecond = (tick - longtick) * 100 };
@@ -70,7 +68,7 @@ namespace RTCM3.Common.Time
 
         public static GNSSTime FromTow(GNSSSystem sys, double tow)
         {
-            var gt = (ReferenceTime ?? DateTime.UtcNow).ToGNSSTime();
+            GNSSTime gt = (ReferenceTime ?? DateTime.UtcNow).ToGNSSTime();
             gt.GetWeekAndTow(sys, out int _week, out double _tow);
             if (tow < _tow - Physics.Week / 2)
             {
@@ -120,7 +118,7 @@ namespace RTCM3.Common.Time
 
         public readonly int GetLeapSecond()
         {
-            var leapseconds = LeapSecond.LeapSecondData;
+            List<Tuple<DateTime, int>> leapseconds = LeapSecond.LeapSecondData;
             int result = 0;
             foreach (Tuple<DateTime, int> item in leapseconds)
             {
@@ -180,7 +178,7 @@ namespace RTCM3.Common.Time
 
         public static GNSSTime ToGNSSTime(this DateTime dateTime)
         {
-            var ls = dateTime.GetLeapSecond();
+            int ls = dateTime.GetLeapSecond();
             return new GNSSTime(dateTime.AddSeconds(ls));
         }
     }

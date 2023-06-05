@@ -100,19 +100,26 @@ namespace TestRTCM3
                         {
                             Assert.AreEqual((msm.Databody as RTCM3_MSM)?.Sync, 1u);
                         }
-
+                        var result = new List<GNSSTime>();
                         foreach (var msm in msms)
                         {
                             var m = msm.Databody as RTCM3_MSM;
                             try
                             {
                                 var o = m?.GetObservations();
+                                var t = o?.Select(x => x.GNSSTime);
+                                if(t != null)
+                                {
+                                    result.AddRange(t);
+                                }
                             }
                             catch (UnsupportedGNSSSystem)
                             {
 
                             }
                         }
+                        var f = result.All(x => x.Equals(result.First()));
+                        Assert.IsTrue(f);
                     }
                 }
             }
@@ -143,7 +150,7 @@ namespace TestRTCM3
         [TestMethod]
         public void PassOrNot()
         {
-            Assert.AreEqual(true, true);
+            Assert.AreEqual(true, false);
         }
     }
 }
