@@ -1,11 +1,3 @@
-using RTCM3;
-using RTCM3.Common;
-using RTCM3.Common.Time;
-using RTCM3.RTCM3Message;
-using System.Buffers;
-
-
-
 namespace TestRTCM3
 {
     [TestClass]
