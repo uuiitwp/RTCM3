@@ -1,4 +1,5 @@
 ﻿using RTCM3.Common;
+using RTCM3.Common.Frequency;
 using RTCM3.Common.Time;
 
 namespace RTCM3
@@ -19,7 +20,7 @@ namespace RTCM3
 
         public override readonly string ToString()
         {
-            return $"{GNSSSystemMethod.GetGNSSSystemChar(GNSSSystem)}{satId:00} CNR={cnr:00}";
+            return $"{GNSSSystemMethod.GetGNSSSystemChar(GNSSSystem)}{satId:00} {Frequency.GetRinexCode(GNSSSystem, sigId)} CNR={cnr:00}";
         }
     }
 }

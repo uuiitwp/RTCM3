@@ -41,7 +41,7 @@
             "2C","2P","2W","","","","",
             "2S","2L","2X","","","","",
             "5I","5Q","5X","","","","","",
-            "1 ","1 ","1 "
+            "1S","1L","1X"
         };
         private static readonly double[] msm_freq_glo = new double[32]{
             double.NaN,G1,G1,double.NaN,double.NaN,double.NaN,double.NaN,
