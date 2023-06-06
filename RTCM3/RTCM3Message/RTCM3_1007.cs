@@ -37,8 +37,10 @@ namespace RTCM3.RTCM3Message
             return ((40 + RTCM3HeaderBitsLength + CRC24QBitsLength) / 8) + (int)AntDescriptorCounter;
         }
 
-        public override void Encode(ref Span<byte> bytes)
+        public override int Encode(ref Span<byte> bytes)
         {
+            var result = GetEncodeBytesLength();
+            bytes[..result].Clear();
             int i = 24;
             int length;
             BitOperation.SetBitsUint(ref bytes, i, length = 12, MessageType);
@@ -53,6 +55,7 @@ namespace RTCM3.RTCM3Message
             BitOperation.SetBitsUint(ref bytes, i, length = 8, AntSetupID);
             i += length;
             EncodeRTCM3(ref bytes, i - 24);
+            return result;
         }
     }
 }

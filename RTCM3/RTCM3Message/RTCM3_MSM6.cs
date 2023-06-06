@@ -47,8 +47,12 @@ namespace RTCM3.RTCM3Message
             return byteLength;
         }
 
-        public override void Encode(ref Span<byte> bytes)
+        public override int Encode(ref Span<byte> bytes)
         {
+
+            var result = GetEncodeBytesLength();
+            bytes[..result].Clear();
+
             int i = (int)(RTCM3HeaderBitsLength + 169 + Cell.Length + (18 * SatNumber));
 
             EncodeMSMHeader(ref bytes);
@@ -79,6 +83,7 @@ namespace RTCM3.RTCM3Message
                 i += 10;
             }
             EncodeRTCM3(ref bytes, i - 24);
+            return result;
         }
     }
 }

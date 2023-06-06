@@ -27,7 +27,7 @@ namespace RTCM3.RTCM3Message
             BitOperation.SetBitsUint(ref result, RTCM3HeaderBitsLength + ((int)bodyBytesLength * 8), CRC24QBitsLength, (uint)CRC24Q.Get(result[..(int)(bodyBytesLength + 3)]));
 
         }
-        public abstract void Encode(ref Span<byte> bytes);
+        public abstract int Encode(ref Span<byte> bytes);
 
         public abstract int GetEncodeBytesLength();
 

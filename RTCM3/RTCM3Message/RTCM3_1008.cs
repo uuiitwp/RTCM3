@@ -45,8 +45,10 @@ namespace RTCM3.RTCM3Message
             return ((48 + RTCM3HeaderBitsLength + CRC24QBitsLength) / 8) + (int)(AntDescriptorCounter + AntennaSerialNumberCounter);
         }
 
-        public override void Encode(ref Span<byte> bytes)
+        public override int Encode(ref Span<byte> bytes)
         {
+            var result = GetEncodeBytesLength();
+            bytes[..result].Clear();
             int i = 24;
             int length;
             BitOperation.SetBitsUint(ref bytes, i, length = 12, MessageType);
@@ -66,6 +68,7 @@ namespace RTCM3.RTCM3Message
             Encoding.ASCII.GetBytes(AntennaSerialNumber).CopyTo(bytes[antennaSerialNumberPosition..(int)(antennaSerialNumberPosition + AntennaSerialNumberCounter)]);
             i += (int)AntennaSerialNumberCounter * 8;
             EncodeRTCM3(ref bytes, i - 24);
+            return result;
         }
     }
 }

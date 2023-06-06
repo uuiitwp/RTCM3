@@ -65,8 +65,11 @@ namespace RTCM3.RTCM3Message
             return (int)bytesLength;
         }
 
-        public override void Encode(ref Span<byte> bytes)
+        public override int Encode(ref Span<byte> bytes)
         {
+
+            var result = GetEncodeBytesLength();
+            bytes[..result].Clear();
             int i = 24;
             int length;
             BitOperation.SetBitsUint(ref bytes, i, length = 12, MessageType);
@@ -100,6 +103,7 @@ namespace RTCM3.RTCM3Message
                 i += length;
             }
             EncodeRTCM3(ref bytes, i - 24);
+            return result;
         }
     }
 }

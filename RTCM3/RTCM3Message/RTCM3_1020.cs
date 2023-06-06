@@ -125,7 +125,7 @@ namespace RTCM3.RTCM3Message
             MessageType = 1019;
         }
 
-        public override void Encode(ref Span<byte> bytes)
+        public override int Encode(ref Span<byte> bytes)
         {
             throw new NotImplementedException();
         }

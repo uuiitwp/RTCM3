@@ -76,44 +76,48 @@ namespace RTCM3.RTCM3Message
             return (int)bytesLength;
         }
 
-        public override void Encode(ref Span<byte> result)
+        public override int Encode(ref Span<byte> bytes)
         {
+            var result = GetEncodeBytesLength();
+            bytes[..result].Clear();
+
             int i = 24;
             int length;
-            BitOperation.SetBitsUint(ref result, i, length = 12, MessageType);
+            BitOperation.SetBitsUint(ref bytes, i, length = 12, MessageType);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 12, StationID);
+            BitOperation.SetBitsUint(ref bytes, i, length = 12, StationID);
             i += length;
 
-            BitOperation.SetBitsUint(ref result, i, length = 8, AntDescriptorCounter);
+            BitOperation.SetBitsUint(ref bytes, i, length = 8, AntDescriptorCounter);
             i += length;
             int antDescriptorPosition = i / 8;
-            Encoding.ASCII.GetBytes(AntDescriptor).CopyTo(result[antDescriptorPosition..(int)(antDescriptorPosition + AntDescriptorCounter)]);
+            Encoding.ASCII.GetBytes(AntDescriptor).CopyTo(bytes[antDescriptorPosition..(int)(antDescriptorPosition + AntDescriptorCounter)]);
             i += (int)AntDescriptorCounter * 8;
-            BitOperation.SetBitsUint(ref result, i, length = 8, AntSetupID);
+            BitOperation.SetBitsUint(ref bytes, i, length = 8, AntSetupID);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 8, AntSerialNumberCounter);
+            BitOperation.SetBitsUint(ref bytes, i, length = 8, AntSerialNumberCounter);
             i += length;
             int antSerialNumberPosition = i / 8;
-            Encoding.ASCII.GetBytes(AntSerialNumber).CopyTo(result[antSerialNumberPosition..(int)(antSerialNumberPosition + AntSerialNumberCounter)]);
+            Encoding.ASCII.GetBytes(AntSerialNumber).CopyTo(bytes[antSerialNumberPosition..(int)(antSerialNumberPosition + AntSerialNumberCounter)]);
             i += (int)AntSerialNumberCounter * 8;
-            BitOperation.SetBitsUint(ref result, i, length = 8, ReceiverDescriptorCounter);
+            BitOperation.SetBitsUint(ref bytes, i, length = 8, ReceiverDescriptorCounter);
             i += length;
             int receiverDescriptorPosition = i / 8;
-            Encoding.ASCII.GetBytes(ReceiverDescriptor).CopyTo(result[receiverDescriptorPosition..(int)(receiverDescriptorPosition + ReceiverDescriptorCounter)]);
+            Encoding.ASCII.GetBytes(ReceiverDescriptor).CopyTo(bytes[receiverDescriptorPosition..(int)(receiverDescriptorPosition + ReceiverDescriptorCounter)]);
             i += (int)ReceiverDescriptorCounter * 8;
 
-            BitOperation.SetBitsUint(ref result, i, length = 8, ReceiverFirmwareVersionCounter);
+            BitOperation.SetBitsUint(ref bytes, i, length = 8, ReceiverFirmwareVersionCounter);
             i += length;
             int receiverFirmwareVersionPosition = i / 8;
-            Encoding.ASCII.GetBytes(ReceiverFirmwareVersion).CopyTo(result[receiverFirmwareVersionPosition..(int)(receiverFirmwareVersionPosition + ReceiverFirmwareVersionCounter)]);
+            Encoding.ASCII.GetBytes(ReceiverFirmwareVersion).CopyTo(bytes[receiverFirmwareVersionPosition..(int)(receiverFirmwareVersionPosition + ReceiverFirmwareVersionCounter)]);
             i += (int)ReceiverFirmwareVersionCounter * 8;
-            BitOperation.SetBitsUint(ref result, i, length = 8, ReceiverSerialNumberCounter);
+            BitOperation.SetBitsUint(ref bytes, i, length = 8, ReceiverSerialNumberCounter);
             i += length;
             int receiverSerialNumberPosition = i / 8;
-            Encoding.ASCII.GetBytes(ReceiverSerialNumber).CopyTo(result[receiverSerialNumberPosition..(int)(receiverSerialNumberPosition + ReceiverSerialNumberCounter)]);
+            Encoding.ASCII.GetBytes(ReceiverSerialNumber).CopyTo(bytes[receiverSerialNumberPosition..(int)(receiverSerialNumberPosition + ReceiverSerialNumberCounter)]);
             i += (int)ReceiverSerialNumberCounter * 8;
-            EncodeRTCM3(ref result, i - 24);
+            EncodeRTCM3(ref bytes, i - 24);
+            return result;
         }
     }
 }

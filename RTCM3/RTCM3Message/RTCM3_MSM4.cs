@@ -49,40 +49,42 @@ namespace RTCM3.RTCM3Message
             return byteLength;
         }
 
-        public override void Encode(ref Span<byte> result)
+        public override int Encode(ref Span<byte> bytes)
         {
-
+            var result = GetEncodeBytesLength();
+            bytes[..result].Clear();
             int i = (int)(RTCM3HeaderBitsLength + 169 + Cell.Length + (18 * SatNumber));
-            EncodeMSMHeader(ref result);
-            EncodeSatData(ref result);
+            EncodeMSMHeader(ref bytes);
+            EncodeSatData(ref bytes);
             for (int j = 0; j < NCell; j++)
             {
                 int temp = double.IsNaN(prv[j]) ? 0x4000 : RoundToInt(prv[j] / Common.Math.pow2_m24 / Common.Physics.RANGE_MS);
-                BitOperation.SetBitsInt(ref result, i, 15, temp);
+                BitOperation.SetBitsInt(ref bytes, i, 15, temp);
                 i += 15;
             }
             for (int j = 0; j < NCell; j++)
             {
                 int temp = double.IsNaN(cpv[j]) ? 0x200000 : RoundToInt(cpv[j] / Common.Math.pow2_m29 / Common.Physics.RANGE_MS);
-                BitOperation.SetBitsInt(ref result, i, 22, temp);
+                BitOperation.SetBitsInt(ref bytes, i, 22, temp);
                 i += 22;
             }
             for (int j = 0; j < NCell; j++)
             {
-                BitOperation.SetBitsUint(ref result, i, 4, plock[j]);
+                BitOperation.SetBitsUint(ref bytes, i, 4, plock[j]);
                 i += 4;
             }
             for (int j = 0; j < NCell; j++)
             {
-                BitOperation.SetBitsUint(ref result, i, 1, half[j]);
+                BitOperation.SetBitsUint(ref bytes, i, 1, half[j]);
                 i += 1;
             }
             for (int j = 0; j < NCell; j++)
             {
-                BitOperation.SetBitsUint(ref result, i, 6, cnr[j]);
+                BitOperation.SetBitsUint(ref bytes, i, 6, cnr[j]);
                 i += 6;
             }
-            EncodeRTCM3(ref result, i - 24);
+            EncodeRTCM3(ref bytes, i - 24);
+            return result;
         }
     }
 }

@@ -45,9 +45,8 @@ namespace TestRTCM3
                     }
                     try
                     {
-                        a1.Clear();
-                        message.Databody?.Encode(ref a1);
-                        var a = message.Databody is null ? null :a1[..message.Databody.GetEncodeBytesLength()].ToArray();
+                        var len = message.Databody?.Encode(ref a1);
+                        var a = len is null ? null :a1[..len.Value].ToArray();
                         RTCM3_MSM46? c = message.Databody as RTCM3_MSM46;
                         var b =a is null ? null : t.Slice(t.Length - a.Length, a.Length).ToArray();
                         if (t.Length - a?.Length > 0)
