@@ -40,12 +40,19 @@ namespace RTCM3.RTCM3Message
             }
         }
 
-        public override Memory<byte> Encode()
+
+        public override int GetEncodeBytesLength()
         {
             int i = (int)(RTCM3HeaderBitsLength + 169 + Cell.Length + (18 * SatNumber));
             int bitLength = (int)(i + CRC24QBitsLength + (48 * NCell));
             int byteLength = (int)GetBodyBytesLength(bitLength);
-            Memory<byte> result = new(new byte[byteLength]);
+            return byteLength;
+        }
+
+        public override void Encode(ref Span<byte> result)
+        {
+
+            int i = (int)(RTCM3HeaderBitsLength + 169 + Cell.Length + (18 * SatNumber));
             EncodeMSMHeader(ref result);
             EncodeSatData(ref result);
             for (int j = 0; j < NCell; j++)
@@ -75,8 +82,7 @@ namespace RTCM3.RTCM3Message
                 BitOperation.SetBitsUint(ref result, i, 6, cnr[j]);
                 i += 6;
             }
-            EncodeRTCM3(ref result, bitLength - 48);
-            return result;
+            EncodeRTCM3(ref result, i - 24);
         }
     }
 }

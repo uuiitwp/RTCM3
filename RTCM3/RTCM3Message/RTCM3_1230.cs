@@ -57,45 +57,49 @@ namespace RTCM3.RTCM3Message
             MessageType = 1230;
         }
 
-        public override Memory<byte> Encode()
+
+        public override int GetEncodeBytesLength()
         {
             uint bitsLength = RTCM3HeaderBitsLength + CRC24QBitsLength + 32 + (16 * N);
             uint bytesLength = bitsLength / 8;
-            Memory<byte> result = new(new byte[bytesLength]);
+            return (int)bytesLength;
+        }
+
+        public override void Encode(ref Span<byte> bytes)
+        {
             int i = 24;
             int length;
-            BitOperation.SetBitsUint(ref result, i, length = 12, MessageType);
+            BitOperation.SetBitsUint(ref bytes, i, length = 12, MessageType);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 12, StationID);
+            BitOperation.SetBitsUint(ref bytes, i, length = 12, StationID);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 1, cpdSYNC);
+            BitOperation.SetBitsUint(ref bytes, i, length = 1, cpdSYNC);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 3, Reserved);
+            BitOperation.SetBitsUint(ref bytes, i, length = 3, Reserved);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 4, FDAMMask);
+            BitOperation.SetBitsUint(ref bytes, i, length = 4, FDAMMask);
             i += length;
             if ((FDAMMask & 0b1000u) > 0)
             {
-                BitOperation.SetBitsInt(ref result, i, length = 16, l1ca);
+                BitOperation.SetBitsInt(ref bytes, i, length = 16, l1ca);
                 i += length;
             }
             if ((FDAMMask & 0b0100u) > 0)
             {
-                BitOperation.SetBitsInt(ref result, i, length = 16, l1p);
+                BitOperation.SetBitsInt(ref bytes, i, length = 16, l1p);
                 i += length;
             }
             if ((FDAMMask & 0b0010u) > 0)
             {
-                BitOperation.SetBitsInt(ref result, i, length = 16, l2ca);
+                BitOperation.SetBitsInt(ref bytes, i, length = 16, l2ca);
                 i += length;
             }
             if ((FDAMMask & 0b0001u) > 0)
             {
-                BitOperation.SetBitsInt(ref result, i, length = 16, l2p);
+                BitOperation.SetBitsInt(ref bytes, i, length = 16, l2p);
                 i += length;
             }
-            EncodeRTCM3(ref result, i - 24);
-            return result;
+            EncodeRTCM3(ref bytes, i - 24);
         }
     }
 }

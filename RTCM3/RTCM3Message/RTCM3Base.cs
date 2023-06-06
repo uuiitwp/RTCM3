@@ -19,15 +19,17 @@ namespace RTCM3.RTCM3Message
             }
             return bodyBytesLength;
         }
-        public static void EncodeRTCM3(ref Memory<byte> result, int bodyBitsLength)
+        public static void EncodeRTCM3(ref Span<byte> result, int bodyBitsLength)
         {
             uint bodyBytesLength = GetBodyBytesLength(bodyBitsLength);
             BitOperation.SetBitsUint(ref result, 0, 8, Preamble);
             BitOperation.SetBitsUint(ref result, 14, 10, bodyBytesLength);
-            BitOperation.SetBitsUint(ref result, RTCM3HeaderBitsLength + ((int)bodyBytesLength * 8), CRC24QBitsLength, (uint)CRC24Q.Get(result[..(int)(bodyBytesLength + 3)].Span));
+            BitOperation.SetBitsUint(ref result, RTCM3HeaderBitsLength + ((int)bodyBytesLength * 8), CRC24QBitsLength, (uint)CRC24Q.Get(result[..(int)(bodyBytesLength + 3)]));
 
         }
-        public abstract Memory<byte> Encode();
+        public abstract void Encode(ref Span<byte> bytes);
+
+        public abstract int GetEncodeBytesLength();
 
         protected static long RoundToLong(double value)
         {

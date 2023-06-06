@@ -37,41 +37,48 @@ namespace RTCM3.RTCM3Message
                 i += 10;
             }
         }
-        public override Memory<byte> Encode()
+
+
+        public override int GetEncodeBytesLength()
         {
             int i = (int)(RTCM3HeaderBitsLength + 169 + Cell.Length + (18 * SatNumber));
             int bitLength = (int)(i + CRC24QBitsLength + (65 * NCell));
             int byteLength = (int)GetBodyBytesLength(bitLength);
-            Memory<byte> result = new(new byte[byteLength]);
-            EncodeMSMHeader(ref result);
-            EncodeSatData(ref result);
+            return byteLength;
+        }
+
+        public override void Encode(ref Span<byte> bytes)
+        {
+            int i = (int)(RTCM3HeaderBitsLength + 169 + Cell.Length + (18 * SatNumber));
+
+            EncodeMSMHeader(ref bytes);
+            EncodeSatData(ref bytes);
             for (int j = 0; j < NCell; j++)
             {
-                BitOperation.SetBitsInt(ref result, i, 20, RoundToInt(prv[j] / Common.Math.pow2_m29 / Common.Physics.RANGE_MS));
+                BitOperation.SetBitsInt(ref bytes, i, 20, RoundToInt(prv[j] / Common.Math.pow2_m29 / Common.Physics.RANGE_MS));
                 i += 20;
             }
             for (int j = 0; j < NCell; j++)
             {
-                BitOperation.SetBitsInt(ref result, i, 24, RoundToInt(cpv[j] / Common.Math.pow2_m29 / Common.Physics.RANGE_MS));
+                BitOperation.SetBitsInt(ref bytes, i, 24, RoundToInt(cpv[j] / Common.Math.pow2_m29 / Common.Physics.RANGE_MS));
                 i += 24;
             }
             for (int j = 0; j < NCell; j++)
             {
-                BitOperation.SetBitsUint(ref result, i, 10, plock[j]);
+                BitOperation.SetBitsUint(ref bytes, i, 10, plock[j]);
                 i += 10;
             }
             for (int j = 0; j < NCell; j++)
             {
-                BitOperation.SetBitsUint(ref result, i, 1, half[j]);
+                BitOperation.SetBitsUint(ref bytes, i, 1, half[j]);
                 i += 1;
             }
             for (int j = 0; j < NCell; j++)
             {
-                BitOperation.SetBitsUint(ref result, i, 10, cnr[j]);
+                BitOperation.SetBitsUint(ref bytes, i, 10, cnr[j]);
                 i += 10;
             }
-            EncodeRTCM3(ref result, bitLength - 48);
-            return result;
+            EncodeRTCM3(ref bytes, i - 24);
         }
     }
 }

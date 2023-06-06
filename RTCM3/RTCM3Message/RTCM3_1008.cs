@@ -40,29 +40,32 @@ namespace RTCM3.RTCM3Message
 
         }
 
-        public override Memory<byte> Encode()
+        public override int GetEncodeBytesLength()
         {
-            Memory<byte> result = new(new byte[((48 + RTCM3HeaderBitsLength + CRC24QBitsLength) / 8) + AntDescriptorCounter + AntennaSerialNumberCounter]);
+            return ((48 + RTCM3HeaderBitsLength + CRC24QBitsLength) / 8) + (int)(AntDescriptorCounter + AntennaSerialNumberCounter);
+        }
+
+        public override void Encode(ref Span<byte> bytes)
+        {
             int i = 24;
             int length;
-            BitOperation.SetBitsUint(ref result, i, length = 12, MessageType);
+            BitOperation.SetBitsUint(ref bytes, i, length = 12, MessageType);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 12, StationID);
+            BitOperation.SetBitsUint(ref bytes, i, length = 12, StationID);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 8, AntDescriptorCounter);
+            BitOperation.SetBitsUint(ref bytes, i, length = 8, AntDescriptorCounter);
             i += length;
             int AntDescriptorPosition = i / 8;
-            Encoding.ASCII.GetBytes(AntDescriptor).CopyTo(result[AntDescriptorPosition..(int)(AntDescriptorPosition + AntDescriptorCounter)]);
+            Encoding.ASCII.GetBytes(AntDescriptor).CopyTo(bytes[AntDescriptorPosition..(int)(AntDescriptorPosition + AntDescriptorCounter)]);
             i += (int)AntDescriptorCounter * 8;
-            BitOperation.SetBitsUint(ref result, i, length = 8, AntSetupID);
+            BitOperation.SetBitsUint(ref bytes, i, length = 8, AntSetupID);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 8, AntennaSerialNumberCounter);
+            BitOperation.SetBitsUint(ref bytes, i, length = 8, AntennaSerialNumberCounter);
             i += length;
             int antennaSerialNumberPosition = i / 8;
-            Encoding.ASCII.GetBytes(AntennaSerialNumber).CopyTo(result[antennaSerialNumberPosition..(int)(antennaSerialNumberPosition + AntennaSerialNumberCounter)]);
+            Encoding.ASCII.GetBytes(AntennaSerialNumber).CopyTo(bytes[antennaSerialNumberPosition..(int)(antennaSerialNumberPosition + AntennaSerialNumberCounter)]);
             i += (int)AntennaSerialNumberCounter * 8;
-            EncodeRTCM3(ref result, i - 24);
-            return result;
+            EncodeRTCM3(ref bytes, i - 24);
         }
     }
 }

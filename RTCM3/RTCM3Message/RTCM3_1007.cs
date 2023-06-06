@@ -32,24 +32,27 @@ namespace RTCM3.RTCM3Message
             AntDescriptor = string.Empty;
         }
 
-        public override Memory<byte> Encode()
+        public override int GetEncodeBytesLength()
         {
-            Memory<byte> result = new(new byte[((40 + RTCM3HeaderBitsLength + CRC24QBitsLength) / 8) + AntDescriptorCounter]);
+            return ((40 + RTCM3HeaderBitsLength + CRC24QBitsLength) / 8) + (int)AntDescriptorCounter;
+        }
+
+        public override void Encode(ref Span<byte> bytes)
+        {
             int i = 24;
             int length;
-            BitOperation.SetBitsUint(ref result, i, length = 12, MessageType);
+            BitOperation.SetBitsUint(ref bytes, i, length = 12, MessageType);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 12, StationID);
+            BitOperation.SetBitsUint(ref bytes, i, length = 12, StationID);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 8, AntDescriptorCounter);
+            BitOperation.SetBitsUint(ref bytes, i, length = 8, AntDescriptorCounter);
             i += length;
             int AntDescriptorPosition = i / 8;
-            Encoding.ASCII.GetBytes(AntDescriptor).CopyTo(result[AntDescriptorPosition..(int)(AntDescriptorPosition + AntDescriptorCounter)]);
+            Encoding.ASCII.GetBytes(AntDescriptor).CopyTo(bytes[AntDescriptorPosition..(int)(AntDescriptorPosition + AntDescriptorCounter)]);
             i += (int)AntDescriptorCounter * 8;
-            BitOperation.SetBitsUint(ref result, i, length = 8, AntSetupID);
+            BitOperation.SetBitsUint(ref bytes, i, length = 8, AntSetupID);
             i += length;
-            EncodeRTCM3(ref result, i - 24);
-            return result;
+            EncodeRTCM3(ref bytes, i - 24);
         }
     }
 }

@@ -137,7 +137,7 @@ namespace RTCM3.RTCM3Message
             }
         }
 
-        protected void EncodeMSMHeader(ref Memory<byte> bytes)
+        protected void EncodeMSMHeader(ref Span<byte> bytes)
         {
             int i = 24;
             int length;

@@ -35,7 +35,7 @@ namespace RTCM3.RTCM3Message
             }
         }
 
-        protected void EncodeSatData(ref Memory<byte> bytes)
+        protected void EncodeSatData(ref Span<byte> bytes)
         {
             int i = 24 + 169 + Cell.Length;
             for (int j = 0; j < Range.Length; j++)

@@ -69,11 +69,15 @@ namespace RTCM3.RTCM3Message
             ReceiverSerialNumber = string.Empty;
         }
 
-        public override Memory<byte> Encode()
+        public override int GetEncodeBytesLength()
         {
             uint bitsLength = 72 + RTCM3HeaderBitsLength + CRC24QBitsLength + (8 * (AntDescriptorCounter + AntSerialNumberCounter + ReceiverDescriptorCounter + ReceiverFirmwareVersionCounter + ReceiverSerialNumberCounter));
             uint bytesLength = bitsLength / 8;
-            Memory<byte> result = new(new byte[bytesLength]);
+            return (int)bytesLength;
+        }
+
+        public override void Encode(ref Span<byte> result)
+        {
             int i = 24;
             int length;
             BitOperation.SetBitsUint(ref result, i, length = 12, MessageType);
@@ -108,8 +112,8 @@ namespace RTCM3.RTCM3Message
             i += length;
             int receiverSerialNumberPosition = i / 8;
             Encoding.ASCII.GetBytes(ReceiverSerialNumber).CopyTo(result[receiverSerialNumberPosition..(int)(receiverSerialNumberPosition + ReceiverSerialNumberCounter)]);
-            EncodeRTCM3(ref result, (int)(bitsLength - 48));
-            return result;
+            i += (int)ReceiverSerialNumberCounter * 8;
+            EncodeRTCM3(ref result, i - 24);
         }
     }
 }

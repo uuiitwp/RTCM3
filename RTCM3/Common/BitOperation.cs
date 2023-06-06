@@ -22,9 +22,8 @@
             return GetBitsUint(buff, pos, 1) == 1u ? -value : value;
         }
 
-        public static void SetBitsUint(ref Memory<byte> memory, int pos, int length, uint data)
+        public static void SetBitsUint(ref Span<byte> buff, int pos, int length, uint data)
         {
-            Span<byte> buff = memory.Span;
             uint mask = 1u << length - 1;
             if (length > 32 || buff.Length * 8 < pos + length)
             {
@@ -47,7 +46,7 @@
             uint result = GetBitsUint(buff, pos, length);
             return length <= 0 || 32 <= length || 0 == (result & 1u << length - 1) ? (int)result : (int)(result | ~0u << length);
         }
-        public static void SetBitsInt(ref Memory<byte> buff, int pos, int length, int data)
+        public static void SetBitsInt(ref Span<byte> buff, int pos, int length, int data)
         {
             if (data < 0)
             {
@@ -72,10 +71,9 @@
             }
             return result;
         }
-        public static void SetBitsUlong(ref Memory<byte> memory, int pos, int length, ulong data)
+        public static void SetBitsUlong(ref Span<byte> buff, int pos, int length, ulong data)
         {
             ulong mask = 1ul << length - 1;
-            Span<byte> buff = memory.Span;
             if (length > 64 || buff.Length * 8 < pos + length)
             {
                 throw new IndexOutOfRangeException();
@@ -97,7 +95,7 @@
             ulong result = GetBitsUlong(buff, pos, length);
             return length <= 0 || 64 <= length || 0 == (result & 1ul << length - 1) ? (long)result : (long)(result | ~0ul << length);
         }
-        public static void SetBitsLong(ref Memory<byte> buff, int pos, int length, long data)
+        public static void SetBitsLong(ref Span<byte> buff, int pos, int length, long data)
         {
             SetBitsUlong(ref buff, pos, length, data < 0 ? (ulong)(data |= 1L << length - 1) : (ulong)(data &= ~(1L << length - 1)));
         }

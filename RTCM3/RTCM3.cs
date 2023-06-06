@@ -8,7 +8,7 @@ namespace RTCM3
     {
         private const uint Preamble = 0xd3;
         private const uint Reserved = 0;
-        public readonly uint DataBytesLength;
+        private readonly uint DataBytesLength;
         public readonly uint MessageType;
         public readonly RTCM3Base? Databody;
         public RTCM3(ReadOnlySpan<byte> bytes, bool checkCRC24Q = true, bool decode = true)

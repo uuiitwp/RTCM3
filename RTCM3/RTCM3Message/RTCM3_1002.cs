@@ -40,7 +40,12 @@ namespace RTCM3.RTCM3Message
                 i += length;
             }
         }
-        public override Memory<byte> Encode()
+        public override void Encode(ref Span<byte> bytes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int GetEncodeBytesLength()
         {
             throw new NotImplementedException();
         }

@@ -53,39 +53,44 @@ namespace RTCM3.RTCM3Message
         {
             MessageType = 1005;
         }
-        public override Memory<byte> Encode()
+
+        public override int GetEncodeBytesLength()
         {
-            Memory<byte> result = new(new byte[(RTCM3HeaderBitsLength + CRC24QBitsLength + DataBitsLength) / 8]);
+            return (RTCM3HeaderBitsLength + CRC24QBitsLength + DataBitsLength) / 8;
+        }
+
+
+        public override void Encode(ref Span<byte> bytes)
+        {
             int i = 24;
             int length;
-            BitOperation.SetBitsUint(ref result, i, length = 12, MessageType);
+            BitOperation.SetBitsUint(ref bytes, i, length = 12, MessageType);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 12, StationID);
+            BitOperation.SetBitsUint(ref bytes, i, length = 12, StationID);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 6, ITRF);
+            BitOperation.SetBitsUint(ref bytes, i, length = 6, ITRF);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 1, GPS);
+            BitOperation.SetBitsUint(ref bytes, i, length = 1, GPS);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 1, Glonass);
+            BitOperation.SetBitsUint(ref bytes, i, length = 1, Glonass);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 1, Galileo);
+            BitOperation.SetBitsUint(ref bytes, i, length = 1, Galileo);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 1, ReferenceStation);
+            BitOperation.SetBitsUint(ref bytes, i, length = 1, ReferenceStation);
             i += length;
-            BitOperation.SetBitsLong(ref result, i, length = 38, RoundToLong(X / 0.0001));
+            BitOperation.SetBitsLong(ref bytes, i, length = 38, RoundToLong(X / 0.0001));
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 1, OSC);
+            BitOperation.SetBitsUint(ref bytes, i, length = 1, OSC);
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 1, Beidou);
+            BitOperation.SetBitsUint(ref bytes, i, length = 1, Beidou);
             i += length;
-            BitOperation.SetBitsLong(ref result, i, length = 38, RoundToLong(Y / 0.0001));
+            BitOperation.SetBitsLong(ref bytes, i, length = 38, RoundToLong(Y / 0.0001));
             i += length;
-            BitOperation.SetBitsUint(ref result, i, length = 2, QuartCycle);
+            BitOperation.SetBitsUint(ref bytes, i, length = 2, QuartCycle);
             i += length;
-            BitOperation.SetBitsLong(ref result, i, length = 38, RoundToLong(Z / 0.0001));
+            BitOperation.SetBitsLong(ref bytes, i, length = 38, RoundToLong(Z / 0.0001));
             i += length;
-            EncodeRTCM3(ref result, i - 24);
-            return result;
+            EncodeRTCM3(ref bytes, i - 24);
         }
 
     }

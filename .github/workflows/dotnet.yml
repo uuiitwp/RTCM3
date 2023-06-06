@@ -25,6 +25,6 @@ jobs:
     - name: Test
       run: dotnet test --verbosity normal -l "console;verbosity=detailed"
     - name: Build
-      run: dotnet build --no-restore -c Release -p:Version=1.1.${{github.run_number}}
+      run: dotnet build --no-restore -c Release -p:Version=1.2.${{github.run_number}}
     - name: Publish
       run: dotnet nuget push RTCM3/bin/Release/*.nupkg -k ${{secrets.NUGET_RTCM3}} -s https://api.nuget.org/v3/index.json
