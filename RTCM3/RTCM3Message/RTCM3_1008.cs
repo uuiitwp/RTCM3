@@ -47,7 +47,7 @@ namespace RTCM3.RTCM3Message
 
         public override int Encode(ref Span<byte> bytes)
         {
-            var result = GetEncodeBytesLength();
+            int result = GetEncodeBytesLength();
             bytes[..result].Clear();
             int i = 24;
             int length;

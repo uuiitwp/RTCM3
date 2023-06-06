@@ -57,7 +57,7 @@ namespace RTCM3.RTCM3Message
             int[] sigIds = GetMaskedSigIds();
             GNSSSystem sys = GetGNSSSystem();
             Observation[] obs = new Observation[NCell];
-            var time = Common.Time.GNSSTime.FromTow(sys, GNSStime / 1000.0);
+            Common.Time.GNSSTime time = Common.Time.GNSSTime.FromTow(sys, GNSStime / 1000.0);
             for (int i = 0, k = 0; i < satIds.Length; i++)
             {
                 for (int j = 0; j < sigIds.Length; j++)

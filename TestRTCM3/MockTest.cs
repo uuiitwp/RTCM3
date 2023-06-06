@@ -32,7 +32,7 @@ namespace TestRTCM3
                     SequencePosition start = rs1.Start;
                     RTCM3.RTCM3? message = RTCM3.RTCM3.Filter(ref rs1);
                     SequencePosition end = rs1.Start;
-                    var t = rs2.Slice(start, end);
+                    ReadOnlySequence<byte> t = rs2.Slice(start, end);
 
                     rs2 = rs2.Slice(end);
                     if (rs1.IsEmpty || rs2.IsEmpty)
@@ -45,13 +45,13 @@ namespace TestRTCM3
                     }
                     try
                     {
-                        var len = message.Databody?.Encode(ref a1);
-                        var a = len is null ? null :a1[..len.Value].ToArray();
+                        int? len = message.Databody?.Encode(ref a1);
+                        byte[]? a = len is null ? null : a1[..len.Value].ToArray();
                         RTCM3_MSM46? c = message.Databody as RTCM3_MSM46;
-                        var b =a is null ? null : t.Slice(t.Length - a.Length, a.Length).ToArray();
+                        byte[]? b = a is null ? null : t.Slice(t.Length - a.Length, a.Length).ToArray();
                         if (t.Length - a?.Length > 0)
                         {
-                            var s = BitConverter.ToString(t.Slice(0, t.Length - a!.Length).ToArray()).Replace('-', ' ');
+                            string s = BitConverter.ToString(t.Slice(0, t.Length - a!.Length).ToArray()).Replace('-', ' ');
                             Console.WriteLine($"skip bytes: {s}");
                         }
                         bool? f = b is null ? null : a?.SequenceEqual(b);
@@ -103,15 +103,15 @@ namespace TestRTCM3
                         {
                             Assert.AreEqual((msm.Databody as RTCM3_MSM)?.Sync, 1u);
                         }
-                        var result = new List<GNSSTime>();
-                        foreach (var msm in msms)
+                        List<GNSSTime> result = new List<GNSSTime>();
+                        foreach (RTCM3.RTCM3 msm in msms)
                         {
-                            var m = msm.Databody as RTCM3_MSM;
+                            RTCM3_MSM? m = msm.Databody as RTCM3_MSM;
                             try
                             {
-                                var o = m?.GetObservations();
-                                var t = o?.Select(x => x.GNSSTime);
-                                if(t != null)
+                                Observation[]? o = m?.GetObservations();
+                                IEnumerable<GNSSTime>? t = o?.Select(x => x.GNSSTime);
+                                if (t != null)
                                 {
                                     result.AddRange(t);
                                 }
@@ -121,7 +121,7 @@ namespace TestRTCM3
 
                             }
                         }
-                        var f = result.All(x => x.Equals(result.First()));
+                        bool f = result.All(x => x.Equals(result.First()));
                         Assert.IsTrue(f);
                     }
                 }

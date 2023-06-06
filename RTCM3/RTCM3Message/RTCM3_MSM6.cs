@@ -50,7 +50,7 @@ namespace RTCM3.RTCM3Message
         public override int Encode(ref Span<byte> bytes)
         {
 
-            var result = GetEncodeBytesLength();
+            int result = GetEncodeBytesLength();
             bytes[..result].Clear();
 
             int i = (int)(RTCM3HeaderBitsLength + 169 + Cell.Length + (18 * SatNumber));
