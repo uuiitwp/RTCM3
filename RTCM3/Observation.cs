@@ -17,7 +17,7 @@ namespace RTCM3
         public double doppler;
 
 
-        public readonly override string ToString()
+        public override readonly string ToString()
         {
             return $"{GNSSSystemMethod.GetGNSSSystemChar(GNSSSystem)}{satId:00} CNR={cnr:00}";
         }

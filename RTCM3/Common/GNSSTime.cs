@@ -51,7 +51,7 @@
 
         }
 
-        public readonly override string ToString()
+        public override readonly string ToString()
         {
             return $"{DateTime:yyyy/MM/dd HH:mm:ss.fffffff} +NanoSecond={NanoSecond} LeapSecond={GetLeapSecond()}";
         }
@@ -187,7 +187,7 @@
 
     public static class LeapSecond
     {
-        private readonly static List<Tuple<DateTime, int>> data = new()
+        private static readonly List<Tuple<DateTime, int>> data = new()
         {
             { new Tuple<DateTime,int>(new DateTime(1981,7,1) ,01) },
             { new Tuple<DateTime,int>(new DateTime(1982,7,1) ,02) },
