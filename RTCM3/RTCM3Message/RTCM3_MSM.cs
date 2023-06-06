@@ -6,7 +6,7 @@ namespace RTCM3.RTCM3Message
     public abstract class RTCM3_MSM : RTCM3Base
     {
         public uint StationID;
-        public uint GNSStime;
+        public uint GNSSEpochTime;
         public uint Sync;
         public uint IODS;
         public uint Reserved;
@@ -37,7 +37,7 @@ namespace RTCM3.RTCM3Message
             i += length;
             StationID = BitOperation.GetBitsUint(databody, i, length = 12);
             i += length;
-            GNSStime = BitOperation.GetBitsUint(databody, i, length = 30);
+            GNSSEpochTime = BitOperation.GetBitsUint(databody, i, length = 30);
             i += length;
             Sync = BitOperation.GetBitsUint(databody, i, length = 1);
             i += length;
@@ -145,7 +145,7 @@ namespace RTCM3.RTCM3Message
             i += length;
             BitOperation.SetBitsUint(ref bytes, i, length = 12, StationID);
             i += length;
-            BitOperation.SetBitsUint(ref bytes, i, length = 30, GNSStime);
+            BitOperation.SetBitsUint(ref bytes, i, length = 30, GNSSEpochTime);
             i += length;
             BitOperation.SetBitsUint(ref bytes, i, length = 1, Sync);
             i += length;

@@ -103,7 +103,7 @@ namespace TestRTCM3
                         {
                             Assert.AreEqual((msm.Databody as RTCM3_MSM)?.Sync, 1u);
                         }
-                        List<GNSSTime> result = new List<GNSSTime>();
+                        List<GNSSTime> result = new();
                         foreach (RTCM3.RTCM3 msm in msms)
                         {
                             RTCM3_MSM? m = msm.Databody as RTCM3_MSM;
