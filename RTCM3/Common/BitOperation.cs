@@ -24,11 +24,12 @@
 
         public static void SetBitsUint(ref Span<byte> buff, int pos, int length, uint data)
         {
-            uint mask = 1u << length - 1;
+
             if (length > 32 || buff.Length * 8 < pos + length)
             {
                 throw new IndexOutOfRangeException();
             }
+            uint mask = 1u << (length - 1);
             for (int i = pos; i < pos + length; i++, mask >>= 1)
             {
                 if ((data & mask) > 0)

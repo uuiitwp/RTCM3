@@ -22,14 +22,14 @@ namespace RTCM3.RTCM3Message
         public uint NCell;
         public BitArray Cell;
 
-        private readonly uint[] GPSMessages = new uint[] { 1071u, 1072u, 1073u, 1074u, 1075u, 1076u, 1077u, };
-        private readonly uint[] GLONASSMessages = new uint[] { 1081u, 1082u, 1083u, 1084u, 1085u, 1086u, 1087u, };
-        private readonly uint[] GALILEOMessages = new uint[] { 1091u, 1092u, 1093u, 1094u, 1095u, 1096u, 1097u, };
+        private static readonly uint[] GPSMessages = new uint[] { 1071u, 1072u, 1073u, 1074u, 1075u, 1076u, 1077u, };
+        private static readonly uint[] GLONASSMessages = new uint[] { 1081u, 1082u, 1083u, 1084u, 1085u, 1086u, 1087u, };
+        private static readonly uint[] GALILEOMessages = new uint[] { 1091u, 1092u, 1093u, 1094u, 1095u, 1096u, 1097u, };
 #pragma warning disable IDE0052 
-        private readonly uint[] SBASMessages = new uint[] { 1101u, 1102u, 1103u, 1104u, 1105u, 1106u, 1107u, };
+        private static readonly uint[] SBASMessages = new uint[] { 1101u, 1102u, 1103u, 1104u, 1105u, 1106u, 1107u, };
 #pragma warning restore IDE0052 
-        private readonly uint[] QZSSMessages = new uint[] { 1111u, 1112u, 1113u, 1114u, 1115u, 1116u, 1117u, };
-        private readonly uint[] BDSMessages = new uint[] { 1121u, 1122u, 1123u, 1124u, 1125u, 1126u, 1127u, };
+        private static readonly uint[] QZSSMessages = new uint[] { 1111u, 1112u, 1113u, 1114u, 1115u, 1116u, 1117u, };
+        private static readonly uint[] BDSMessages = new uint[] { 1121u, 1122u, 1123u, 1124u, 1125u, 1126u, 1127u, };
         public RTCM3_MSM(ReadOnlySpan<byte> databody)
         {
             int length;
