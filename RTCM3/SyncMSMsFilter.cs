@@ -3,12 +3,12 @@ using System.Buffers;
 
 namespace RTCM3
 {
-    public class SyncMSMFilter
+    public class SyncMSMsFilter
     {
         public static int InitLength { get; set; } = 8;
         private List<RTCM3> MSMs = new(InitLength);
 
-        public SyncMSMFilter()
+        public SyncMSMsFilter()
         {
         }
         public RTCM3[]? Filter(ref ReadOnlySequence<byte> buffer)
