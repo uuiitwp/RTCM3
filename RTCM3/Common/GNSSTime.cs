@@ -47,7 +47,7 @@
             DateTime start = StartTime.GetStartTime(sys);
             double dt = (DateTime - start).TotalSeconds;
             week = (int)(dt / Physics.Week);
-            tow = dt % Physics.Week + NanoSecond / Physics.NanoSecond;
+            tow = dt % Physics.Week + NanoSecond * Physics.NanoSecond;
 
         }
 
@@ -59,7 +59,7 @@
         public static GNSSTime FromWeekAndTow(GNSSSystem sys, int week, double tow)
         {
             int intsec = (int)tow;
-            double tick = (tow - intsec) * Physics.Tick;
+            double tick = (tow - intsec) / Physics.Tick;
             long longtick = (long)tick;
             DateTime start = StartTime.GetStartTime(sys);
             intsec = sys == GNSSSystem.BEIDOU ? intsec + 14 : intsec;
