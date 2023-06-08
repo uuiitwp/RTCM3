@@ -3,8 +3,10 @@
     public static class Math
     {
         public const double PI = System.Math.PI;
+        public static readonly double pow2_p3 = System.Math.Pow(2, 3);
         public static readonly double pow2_p4 = System.Math.Pow(2, 4);
         public static readonly double pow2_m5 = System.Math.Pow(2, -5);
+        public static readonly double pow2_m6 = System.Math.Pow(2, -6);
         public static readonly double pow2_m10 = System.Math.Pow(2, -10);
         public static readonly double pow2_m11 = System.Math.Pow(2, -11);
         public static readonly double pow2_m19 = System.Math.Pow(2, -19);
@@ -16,6 +18,8 @@
         public static readonly double pow2_m33 = System.Math.Pow(2, -33);
         public static readonly double pow2_m40 = System.Math.Pow(2, -40);
         public static readonly double pow2_m43 = System.Math.Pow(2, -43);
+        public static readonly double pow2_m50 = System.Math.Pow(2, -50);
         public static readonly double pow2_m55 = System.Math.Pow(2, -55);
+        public static readonly double pow2_m66 = System.Math.Pow(2, -66);
     }
 }

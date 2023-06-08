@@ -54,6 +54,7 @@ namespace RTCM3
                     1020 => new RTCM3_1020(body),
                     1032 => new RTCM3_1032(body),
                     1033 => new RTCM3_1033(body),
+                    1042 => new RTCM3_1042(body),
                     1074 => new RTCM3_MSM4(body),
                     1076 => new RTCM3_MSM6(body),
                     1084 => new RTCM3_MSM4(body),
