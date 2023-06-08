@@ -78,7 +78,7 @@ namespace TestRTCM3
         {
             foreach (FileInfo file in GetFiles())
             {
-                SyncMSMFilter Filter = new();
+                SyncMSMsFilter Filter = new();
                 byte[] bs = File.ReadAllBytes(file.FullName);
                 ReadOnlySequence<byte> rs = new(bs);
                 while (true)
