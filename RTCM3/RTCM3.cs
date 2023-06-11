@@ -87,6 +87,7 @@ namespace RTCM3
                 Span<byte> h1 = stackalloc byte[3];
                 if (!reader.TryCopyTo(h1))
                 {
+                    buffer = buffer.Slice(Consumed);
                     return null;
                 }
                 if (BitOperation.GetBitsUint(h1, 8, 6) == Reserved)
@@ -95,6 +96,7 @@ namespace RTCM3
                     h1 = stackalloc byte[(int)len];
                     if (!reader.TryCopyTo(h1))
                     {
+                        buffer = buffer.Slice(Consumed);
                         return null;
                     }
                     try
