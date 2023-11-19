@@ -111,21 +111,15 @@ namespace RTCM3.RTCM3Message
             }
         }
 
-        private static double GetResidual(uint value)
+        private static double GetResidual(uint value) => value switch
         {
-            if (value is >= 0 and <= 999)
-            {
-                return 0 + (value * 0.0001);
-            }
-            else if (value is >= 1000 and <= 1899)
-            {
-                return 0.1 + ((value - 1000) * 0.001);
-            }
-            else
-            {
-                return value is >= 1900 and <= 1999 ? 1 + ((value - 1900) * 0.01) : value is >= 2000 and <= 2046 ? 2 + ((value - 2000) * 0.1) : 9999.99;
-            }
-        }
+            >= 0 and <= 999 => value * 0.0001,
+            >= 1000 and <= 1899 => 0.1 + ((value - 1000) * 0.001),
+            >= 1900 and <= 1999 => 1 + ((value - 1900) * 0.01),
+            >= 2000 and <= 2046 => 2 + ((value - 2000) * 0.1),
+            _ => 9999.99,
+        };
+
 
         public GNSSSystem GetSystem()
         {
