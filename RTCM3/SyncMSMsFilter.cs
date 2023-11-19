@@ -19,7 +19,7 @@ namespace RTCM3
                 MSMs.Add(m);
                 if (msm.Sync == 0u)
                 {
-                    RTCM3[] result = MSMs.ToArray();
+                    RTCM3[] result = [.. MSMs];
                     MSMs = new(InitLength);
                     return result;
                 }

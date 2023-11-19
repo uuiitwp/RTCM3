@@ -1,8 +1,7 @@
 ﻿namespace RTCM3.Common
 {
-    public class UnsupportedGNSSSystem : Exception
+    public class UnsupportedGNSSSystem(GNSSSystem GNSSSystem) : Exception($"{GNSSSystem} is not supported")
     {
-        public UnsupportedGNSSSystem(GNSSSystem GNSSSystem) : base($"{GNSSSystem} is not supported") { }
     }
 
     [Flags]
