@@ -11,6 +11,8 @@ namespace RTCM3.RTCM3Message
         public double ReferenceStationY;
         public double ReferenceStationZ;
 
+        private const int DataBitsLength = 156;
+
         public RTCM3_1032(ReadOnlySpan<byte> databody)
         {
             int i = 0;
@@ -43,11 +45,30 @@ namespace RTCM3.RTCM3Message
 
         public override int Encode(ref Span<byte> bytes)
         {
-            throw new NotImplementedException();
+            int result = GetEncodeBytesLength();
+            bytes[..result].Clear();
+            int i = 24;
+            int length;
+            BitOperation.SetBitsUint(ref bytes, i, length = 12, MessageType);
+            i += length;
+            BitOperation.SetBitsUint(ref bytes, i, length = 12, StationID);
+            i += length;
+            BitOperation.SetBitsUint(ref bytes, i, length = 12, ReferenceStationID);
+            i += length;
+            BitOperation.SetBitsUint(ref bytes, i, length = 6, ITRF);
+            i += length;
+            BitOperation.SetBitsLong(ref bytes, i, length = 38, RoundToLong(ReferenceStationX / 0.0001));
+            i += length;
+            BitOperation.SetBitsLong(ref bytes, i, length = 38, RoundToLong(ReferenceStationY / 0.0001));
+            i += length;
+            BitOperation.SetBitsLong(ref bytes, i, length = 38, RoundToLong(ReferenceStationZ / 0.0001));
+            i += length;
+            EncodeRTCM3(ref bytes, i - 24);
+            return result;
         }
         public override int GetEncodeBytesLength()
         {
-            throw new NotImplementedException();
+            return (RTCM3HeaderBitsLength + CRC24QBitsLength + DataBitsLength + 4) / 8;
         }
     }
 }

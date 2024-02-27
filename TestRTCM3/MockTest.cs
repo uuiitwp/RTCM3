@@ -53,7 +53,16 @@ namespace TestRTCM3
                         if (t.Length - a?.Length > 0)
                         {
                             string s = BitConverter.ToString(t.Slice(0, t.Length - a!.Length).ToArray()).Replace('-', ' ');
-                            Console.WriteLine($"skip bytes: {s}");
+                            var max_show_len = 10;
+                            if (s.Length < max_show_len)
+                            {
+                                Console.WriteLine($"skip bytes: {s}");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"skip {s.Length} bytes: {s[..(max_show_len * 3)]}...");
+                            }
+
                         }
                         bool? f = b is null ? null : a?.SequenceEqual(b);
                         if (f is null)
