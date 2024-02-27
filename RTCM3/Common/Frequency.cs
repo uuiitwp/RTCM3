@@ -481,10 +481,7 @@
             double.NaN
         ];
 
-        public static double[] GlonassFrequencyNumber
-        {
-            get => glonass_frequency_number;
-        }
+        public static double[] GlonassFrequencyNumber => glonass_frequency_number;
 
         public static double GetGlonassFrequency(int satId, int sigId)
         {

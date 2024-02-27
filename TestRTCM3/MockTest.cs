@@ -19,6 +19,9 @@ namespace TestRTCM3
                 byte[] bs = File.ReadAllBytes(file.FullName);
                 ReadOnlySequence<byte> rs1 = new(bs);
                 ReadOnlySequence<byte> rs2 = new(bs);
+                long rs1_remain = 0;
+                long rs2_remain = 0;
+
                 while (true)
                 {
                     SequencePosition start = rs1.Start;
@@ -31,6 +34,12 @@ namespace TestRTCM3
                     {
                         break;
                     }
+                    if (rs1_remain == rs1.Length || rs2_remain == rs2.Length)
+                    {
+                        break;
+                    }
+                    rs1_remain = rs1.Length;
+                    rs2_remain = rs2.Length;
                     if (message is null)
                     {
                         continue;
@@ -81,12 +90,18 @@ namespace TestRTCM3
                 SyncMSMsFilter Filter = new();
                 byte[] bs = File.ReadAllBytes(file.FullName);
                 ReadOnlySequence<byte> rs = new(bs);
+                long rs_remain = 0;
                 while (true)
                 {
                     if (rs.IsEmpty)
                     {
                         break;
                     }
+                    if (rs_remain == rs.Length)
+                    {
+                        break;
+                    }
+                    rs_remain = rs.Length;
                     RTCM3.RTCM3[]? msms = Filter.Filter(ref rs);
                     if (msms is not null)
                     {
