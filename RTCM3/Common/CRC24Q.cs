@@ -1,6 +1,6 @@
 ﻿namespace RTCM3.Common
 {
-    public class CRC24Q
+    public static class CRC24Q
     {
         private static readonly int[] TABLE_CRC24Q =
             [
