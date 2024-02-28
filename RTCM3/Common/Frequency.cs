@@ -1,4 +1,4 @@
-﻿namespace RTCM3.Common.Frequency
+﻿namespace RTCM3.Common
 {
     public static class Frequency
     {

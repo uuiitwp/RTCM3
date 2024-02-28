@@ -1,5 +1,4 @@
 ﻿using RTCM3.Common;
-using RTCM3.Common.Frequency;
 
 namespace RTCM3.RTCM3Message
 {

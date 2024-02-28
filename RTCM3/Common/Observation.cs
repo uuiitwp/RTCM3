@@ -1,8 +1,6 @@
-﻿using RTCM3.Common;
-using RTCM3.Common.Frequency;
-using RTCM3.Common.Time;
+﻿using RTCM3.Common.Time;
 
-namespace RTCM3
+namespace RTCM3.Common
 {
     public struct Observation
     {

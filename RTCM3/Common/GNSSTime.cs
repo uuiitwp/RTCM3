@@ -48,7 +48,6 @@
             double dt = (DateTime - start).TotalSeconds;
             week = (int)(dt / Physics.Week);
             tow = dt % Physics.Week + NanoSecond * Physics.NanoSecond;
-
         }
 
         public override readonly string ToString()
