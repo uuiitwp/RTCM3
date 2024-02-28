@@ -165,11 +165,5 @@ namespace TestRTCM3
             Assert.AreEqual(t.ToGNSSTime().GetLeapSecond(), 17);
 
         }
-
-        [TestMethod]
-        public void PassOrNot()
-        {
-            Assert.AreEqual(true, true);
-        }
     }
 }
