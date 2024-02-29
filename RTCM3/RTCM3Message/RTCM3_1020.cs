@@ -122,7 +122,7 @@ namespace RTCM3.RTCM3Message
 
         public RTCM3_1020()
         {
-            MessageType = 1019;
+            MessageType = 1020;
         }
 
         public override int Encode(ref Span<byte> bytes)
