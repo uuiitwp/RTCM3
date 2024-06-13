@@ -123,5 +123,50 @@ namespace RTCM3
             }
             return result;
         }
+        public static RTCM3? Filter1(ref ReadOnlySequence<byte> buffer, out Span<byte> h1)
+        {
+            RTCM3? result = null;
+            SequenceReader<byte> reader = new(buffer);
+            h1 = null;
+            if (reader.TryAdvanceTo((byte)Preamble, false))
+            {
+                long Consumed = reader.Consumed;
+                h1 = new byte[3];
+                if (!reader.TryCopyTo(h1))
+                {
+                    buffer = buffer.Slice(Consumed);
+                    return null;
+                }
+                if (BitOperation.GetBitsUint(h1, 8, 6) == Reserved)
+                {
+                    uint len = BitOperation.GetBitsUint(h1, 14, 10) + 6;
+                    h1 = new byte[(int)len];
+                    if (!reader.TryCopyTo(h1))
+                    {
+                        buffer = buffer.Slice(Consumed);
+                        return null;
+                    }
+                    try
+                    {
+                        result = new RTCM3(h1);
+                        buffer = buffer.Slice(len + Consumed);
+                    }
+                    catch
+                    {
+                        result = null;
+                        buffer = buffer.Slice(1 + Consumed);
+                    }
+                }
+                else
+                {
+                    buffer = buffer.Slice(3 + Consumed);
+                }
+            }
+            else
+            {
+                buffer = buffer.Slice(buffer.Length);
+            }
+            return result;
+        }
     }
 }
