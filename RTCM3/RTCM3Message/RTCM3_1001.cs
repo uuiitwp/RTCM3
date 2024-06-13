@@ -42,5 +42,9 @@ namespace RTCM3.RTCM3Message
             throw new NotImplementedException();
         }
 
+        public override Observation[] GetObservations()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

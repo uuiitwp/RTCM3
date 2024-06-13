@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace RTCM3.RTCM3Message
 {
-    public abstract class RTCM3_MSM : RTCM3Base
+    public abstract class RTCM3_MSM : RTCM3Base, IObservations
     {
         public uint StationID;
         public uint GNSSEpochTime;
