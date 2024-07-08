@@ -41,6 +41,9 @@
     <None Update="RTCM3_bin\test6.rtcm3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="RTCM3_bin\test7.rtcm3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

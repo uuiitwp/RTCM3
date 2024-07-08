@@ -2,24 +2,32 @@
 
 namespace RTCM3.RTCM3Message
 {
-    public abstract class RTCM3_MSM46 : RTCM3_MSM
+    public abstract class RTCM3_MSM57 : RTCM3_MSM
     {
         public double[] Range;
+        public uint[] ex_sat_info;
         public double[] RangeM;
+        public double[] RoughPhaseRangeRate;
         public double[] prv;
         public double[] cpv;
         public uint[] plock;
         public uint[] half;
         public uint[] cnr;
-        public RTCM3_MSM46(ReadOnlySpan<byte> databody) : base(databody)
+        public double[] FinePhaseRangeRate;
+        public double[] PhaseRangeRate;
+        public RTCM3_MSM57(ReadOnlySpan<byte> databody) : base(databody)
         {
             Range = new double[SatNumber];
+            ex_sat_info = new uint[SatNumber];
             RangeM = new double[SatNumber];
+            RoughPhaseRangeRate = new double[SatNumber];
             prv = new double[NCell];
             cpv = new double[NCell];
             plock = new uint[NCell];
             half = new uint[NCell];
             cnr = new uint[NCell];
+            FinePhaseRangeRate = new double[NCell];
+            PhaseRangeRate = new double[NCell];
             for (int j = 0; j < Range.Length; j++)
             {
                 uint temp = BitOperation.GetBitsUint(databody, i, 8);
@@ -27,27 +35,29 @@ namespace RTCM3.RTCM3Message
                 i += 8;
             }
 
+            for (int j = 0; j < ex_sat_info.Length; j++)
+            {
+                uint temp = BitOperation.GetBitsUint(databody, i, 4);
+                ex_sat_info[j] = temp;
+                i += 4;
+            }
+
             for (int j = 0; j < RangeM.Length; j++)
             {
                 RangeM[j] = BitOperation.GetBitsUint(databody, i, 10) * Common.Math.pow2_m10 * Physics.RANGE_MS;
                 i += 10;
             }
+
+            for (int j = 0; j < RoughPhaseRangeRate.Length; j++)
+            {
+                RoughPhaseRangeRate[j] = BitOperation.GetBitsInt(databody, i, 14);
+                i += 14;
+            }
         }
 
         protected void EncodeSatData(ref Span<byte> bytes)
         {
-            int i = 24 + 169 + Cell.Length;
-            for (int j = 0; j < Range.Length; j++)
-            {
-                uint temp = double.IsNaN(Range[j]) ? 0xFFu : (uint)RoundToLong(Range[j] / Physics.RANGE_MS);
-                BitOperation.SetBitsUint(ref bytes, i, 8, temp);
-                i += 8;
-            }
-            for (int j = 0; j < RangeM.Length; j++)
-            {
-                BitOperation.SetBitsUint(ref bytes, i, 10, (uint)RoundToLong(RangeM[j] / Common.Math.pow2_m10 / Physics.RANGE_MS));
-                i += 10;
-            }
+            throw new NotImplementedException();
         }
 
         public override Observation[] GetObservations()
@@ -76,6 +86,7 @@ namespace RTCM3.RTCM3Message
                             pseudoRange = Range[i] + RangeM[i] + prv[k],
                             carrierPhase = (Range[i] + RangeM[i] + cpv[k]) * freq / Physics.CLIGHT,
                             GNSSTime = time,
+                            doppler = RoughPhaseRangeRate[i] + FinePhaseRangeRate[k],
                         };
                         k++;
                     }
