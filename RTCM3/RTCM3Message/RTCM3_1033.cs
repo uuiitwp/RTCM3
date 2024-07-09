@@ -39,7 +39,7 @@ namespace RTCM3.RTCM3Message
             AntSerialNumberCounter = BitOperation.GetBitsUint(databody, i, length = 8);
             i += length;
             int antSerialNumberPosition = i / 8;
-            AntSerialNumber = Encoding.ASCII.GetString(databody.Slice(antSerialNumberPosition,AntSerialNumberCounter));
+            AntSerialNumber = Encoding.ASCII.GetString(databody.Slice(antSerialNumberPosition, AntSerialNumberCounter));
             i += (int)AntSerialNumberCounter * 8;
 
             ReceiverDescriptorCounter = BitOperation.GetBitsUint(databody, i, length = 8);
@@ -51,13 +51,13 @@ namespace RTCM3.RTCM3Message
             ReceiverFirmwareVersionCounter = BitOperation.GetBitsUint(databody, i, length = 8);
             i += length;
             int receiverFirmwareVersionPosition = i / 8;
-            ReceiverFirmwareVersion = Encoding.ASCII.GetString(databody.Slice(receiverFirmwareVersionPosition,  ReceiverFirmwareVersionCounter));
+            ReceiverFirmwareVersion = Encoding.ASCII.GetString(databody.Slice(receiverFirmwareVersionPosition, ReceiverFirmwareVersionCounter));
             i += (int)ReceiverFirmwareVersionCounter * 8;
 
             ReceiverSerialNumberCounter = BitOperation.GetBitsUint(databody, i, length = 8);
             i += length;
             int receiverSerialNumberPosition = i / 8;
-            ReceiverSerialNumber = Encoding.ASCII.GetString(databody.Slice(receiverSerialNumberPosition,  ReceiverSerialNumberCounter));
+            ReceiverSerialNumber = Encoding.ASCII.GetString(databody.Slice(receiverSerialNumberPosition, ReceiverSerialNumberCounter));
         }
 
         public RTCM3_1033()

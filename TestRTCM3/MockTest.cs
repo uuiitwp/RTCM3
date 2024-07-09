@@ -17,13 +17,13 @@ namespace TestRTCM3
             foreach (FileInfo file in GetFiles())
             {
                 Console.WriteLine($"file name: {file.Name}");
-                using var fs = File.OpenRead(file.FullName);
+                using FileStream fs = File.OpenRead(file.FullName);
                 PipeReader pipeReader = PipeReader.Create(fs);
                 while (true)
                 {
-                    var rs = pipeReader.ReadAsync().AsTask().Result;
-                    var buffer = rs.Buffer;
-                    var read = buffer.Slice(0);
+                    ReadResult rs = pipeReader.ReadAsync().AsTask().Result;
+                    ReadOnlySequence<byte> buffer = rs.Buffer;
+                    ReadOnlySequence<byte> read = buffer.Slice(0);
 
                     RTCM3.RTCM3? message = RTCM3.RTCM3.Filter(ref buffer);
 
@@ -33,15 +33,15 @@ namespace TestRTCM3
                         {
                             if (message.Databody != null)
                             {
-                                var len = message.Databody.Encode(ref span);
-                                var start = read.GetOffset(buffer.Start) - read.GetOffset(read.Start);
-                                var a = span[..len].ToArray();
-                                var b = read.Slice(start - len, len).ToArray();
+                                int len = message.Databody.Encode(ref span);
+                                long start = read.GetOffset(buffer.Start) - read.GetOffset(read.Start);
+                                byte[] a = span[..len].ToArray();
+                                byte[] b = read.Slice(start - len, len).ToArray();
                                 if (!a.SequenceEqual(b))
                                 {
                                     Console.WriteLine(BitConverter.ToString(a).Replace('-', ' '));
                                     Console.WriteLine(BitConverter.ToString(b).Replace('-', ' '));
-                                    Assert.Fail("Sequences are not equal");
+                                    Assert.Fail("Sequences are not equal.");
                                 }
                             }
                         }

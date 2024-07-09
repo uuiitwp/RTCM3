@@ -24,13 +24,13 @@ namespace RTCM3.RTCM3Message
             AntDescriptorCounter = BitOperation.GetBitsUint(databody, i, length = 8);
             i += length;
             int antDescriptorPosition = i / 8;
-            AntDescriptor = Encoding.ASCII.GetString(databody.Slice(antDescriptorPosition,  AntDescriptorCounter));
+            AntDescriptor = Encoding.ASCII.GetString(databody.Slice(antDescriptorPosition, AntDescriptorCounter));
             i += (int)AntDescriptorCounter * 8;
             AntSetupID = BitOperation.GetBitsUint(databody, i, length = 8);
             i += length;
             AntennaSerialNumberCounter = BitOperation.GetBitsUint(databody, i, 8);
             int antennaSerialNumberPosition = i / 8;
-            AntennaSerialNumber = Encoding.ASCII.GetString(databody.Slice(antennaSerialNumberPosition,  AntennaSerialNumberCounter));
+            AntennaSerialNumber = Encoding.ASCII.GetString(databody.Slice(antennaSerialNumberPosition, AntennaSerialNumberCounter));
         }
 
         public RTCM3_1008()

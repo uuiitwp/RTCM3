@@ -39,7 +39,7 @@ namespace RTCM3
             MessageType = BitOperation.GetBitsUint(bytes, 24, 12);
             if (decode)
             {
-                var body = bytes.Slice(3,(int)(3 + DataBytesLength));
+                ReadOnlySequence<byte> body = bytes.Slice(3, (int)(3 + DataBytesLength));
                 Databody = MessageType switch
                 {
                     1001 => new RTCM3_1001(body),
