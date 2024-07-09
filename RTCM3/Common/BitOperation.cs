@@ -1,8 +1,10 @@
-﻿namespace RTCM3.Common
+﻿using System.Buffers;
+
+namespace RTCM3.Common
 {
     public static class BitOperation
     {
-        public static uint GetBitsUint(ReadOnlySpan<byte> buff, int pos, int length)
+        public static uint GetBitsUint(ReadOnlySequence<byte> buff, int pos, int length)
         {
             uint result = 0;
             if (length > 32 || buff.Length * 8 < pos + length)
@@ -11,12 +13,14 @@
             }
             for (int i = pos; i < pos + length; i++)
             {
-                result = (result << 1) + ((uint)buff[i / 8] >> 7 - i % 8 & 1u);
+                SequenceReader<byte> sequenceReader = new(buff);
+                sequenceReader.TryPeek(i / 8, out byte value);
+                result = (result << 1) + ((uint)value >> 7 - i % 8 & 1u);
             }
             return result;
         }
 
-        public static long GetBitsIntS(ReadOnlySpan<byte> buff, int pos, int length)
+        public static long GetBitsIntS(ReadOnlySequence<byte> buff, int pos, int length)
         {
             long value = GetBitsUint(buff, pos + 1, length - 1);
             return GetBitsUint(buff, pos, 1) == 1u ? -value : value;
@@ -42,7 +46,7 @@
                 }
             }
         }
-        public static int GetBitsInt(ReadOnlySpan<byte> buff, int pos, int length)
+        public static int GetBitsInt(ReadOnlySequence<byte> buff, int pos, int length)
         {
             uint result = GetBitsUint(buff, pos, length);
             return length <= 0 || 32 <= length || 0 == (result & 1u << length - 1) ? (int)result : (int)(result | ~0u << length);
@@ -59,7 +63,7 @@
             }
             SetBitsUint(ref buff, pos, length, (uint)data);
         }
-        public static ulong GetBitsUlong(ReadOnlySpan<byte> buff, int pos, int length)
+        public static ulong GetBitsUlong(ReadOnlySequence<byte> buff, int pos, int length)
         {
             ulong result = 0;
             if (length > 64 || buff.Length * 8 < pos + length)
@@ -68,7 +72,9 @@
             }
             for (int i = pos; i < pos + length; i++)
             {
-                result = (result << 1) + ((ulong)buff[i / 8] >> 7 - i % 8 & 1ul);
+                SequenceReader<byte> sequenceReader = new(buff);
+                sequenceReader.TryPeek(i / 8, out byte value);
+                result = (result << 1) + ((ulong)value >> 7 - i % 8 & 1ul);
             }
             return result;
         }
@@ -91,7 +97,7 @@
                 }
             }
         }
-        public static long GetBitsLong(ReadOnlySpan<byte> buff, int pos, int length)
+        public static long GetBitsLong(ReadOnlySequence<byte> buff, int pos, int length)
         {
             ulong result = GetBitsUlong(buff, pos, length);
             return length <= 0 || 64 <= length || 0 == (result & 1ul << length - 1) ? (long)result : (long)(result | ~0ul << length);

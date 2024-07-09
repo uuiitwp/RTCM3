@@ -1,4 +1,5 @@
 ﻿using RTCM3.Common;
+using System.Buffers;
 
 namespace RTCM3.RTCM3Message
 {
@@ -12,7 +13,7 @@ namespace RTCM3.RTCM3Message
         public uint SmoothInterval;
         protected int i;
 
-        public RTCM3_1001to1004(ReadOnlySpan<byte> databody)
+        public RTCM3_1001to1004(ReadOnlySequence<byte> databody)
         {
             int length;
             MessageType = BitOperation.GetBitsUint(databody, i, length = 12);

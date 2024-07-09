@@ -1,10 +1,11 @@
 ﻿using RTCM3.Common;
+using System.Buffers;
 
 namespace RTCM3.RTCM3Message
 {
     public class RTCM3_MSM5 : RTCM3_MSM57
     {
-        public RTCM3_MSM5(ReadOnlySpan<byte> databody) : base(databody)
+        public RTCM3_MSM5(ReadOnlySequence<byte> databody) : base(databody)
         {
 
             for (int j = 0; j < NCell; j++)

@@ -1,4 +1,5 @@
 ﻿using RTCM3.Common;
+using System.Buffers;
 using System.Collections;
 
 namespace RTCM3.RTCM3Message
@@ -28,7 +29,7 @@ namespace RTCM3.RTCM3Message
         private static readonly uint[] SBASMessages = [1101u, 1102u, 1103u, 1104u, 1105u, 1106u, 1107u,];
         private static readonly uint[] QZSSMessages = [1111u, 1112u, 1113u, 1114u, 1115u, 1116u, 1117u,];
         private static readonly uint[] BDSMessages = [1121u, 1122u, 1123u, 1124u, 1125u, 1126u, 1127u,];
-        public RTCM3_MSM(ReadOnlySpan<byte> databody)
+        public RTCM3_MSM(ReadOnlySequence<byte> databody)
         {
             int length;
             MessageType = BitOperation.GetBitsUint(databody, i, length = 12);

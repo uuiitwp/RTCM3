@@ -1,4 +1,5 @@
 ﻿using RTCM3.Common;
+using System.Buffers;
 
 namespace RTCM3.RTCM3Message
 {
@@ -15,7 +16,7 @@ namespace RTCM3.RTCM3Message
         public uint[] cnr;
         public double[] FinePhaseRangeRate;
         public double[] PhaseRangeRate;
-        public RTCM3_MSM57(ReadOnlySpan<byte> databody) : base(databody)
+        public RTCM3_MSM57(ReadOnlySequence<byte> databody) : base(databody)
         {
             Range = new double[SatNumber];
             ex_sat_info = new uint[SatNumber];

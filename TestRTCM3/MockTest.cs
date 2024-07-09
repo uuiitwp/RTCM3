@@ -1,3 +1,5 @@
+using System.IO.Pipelines;
+
 namespace TestRTCM3
 {
     [TestClass]
@@ -11,79 +13,47 @@ namespace TestRTCM3
         [TestMethod]
         public void DecodeEncodeRTCM3()
         {
-
-            Span<byte> a1 = stackalloc byte[2048];
+            Span<byte> span = stackalloc byte[2048];
             foreach (FileInfo file in GetFiles())
             {
                 Console.WriteLine($"file name: {file.Name}");
-                byte[] bs = File.ReadAllBytes(file.FullName);
-                ReadOnlySequence<byte> rs1 = new(bs);
-                ReadOnlySequence<byte> rs2 = new(bs);
-                long rs1_remain = 0;
-                long rs2_remain = 0;
-
+                using var fs = File.OpenRead(file.FullName);
+                PipeReader pipeReader = PipeReader.Create(fs);
                 while (true)
                 {
-                    SequencePosition start = rs1.Start;
-                    RTCM3.RTCM3? message = RTCM3.RTCM3.Filter(ref rs1);
-                    SequencePosition end = rs1.Start;
-                    ReadOnlySequence<byte> t = rs2.Slice(start, end);
+                    var rs = pipeReader.ReadAsync().AsTask().Result;
+                    var buffer = rs.Buffer;
+                    var read = buffer.Slice(0);
 
-                    rs2 = rs2.Slice(end);
-                    if (rs1.IsEmpty || rs2.IsEmpty)
+                    RTCM3.RTCM3? message = RTCM3.RTCM3.Filter(ref buffer);
+
+                    if (message != null)
+                    {
+                        try
+                        {
+                            if (message.Databody != null)
+                            {
+                                var len = message.Databody.Encode(ref span);
+                                var start = read.GetOffset(buffer.Start) - read.GetOffset(read.Start);
+                                var a = span[..len].ToArray();
+                                var b = read.Slice(start - len, len).ToArray();
+                                if (!a.SequenceEqual(b))
+                                {
+                                    Console.WriteLine(BitConverter.ToString(a).Replace('-', ' '));
+                                    Console.WriteLine(BitConverter.ToString(b).Replace('-', ' '));
+                                    Assert.Fail("Sequences are not equal");
+                                }
+                            }
+                        }
+                        catch (NotImplementedException)
+                        {
+                            Console.WriteLine($"RTCM_{message.MessageType} Encode method is not implemented.");
+                        }
+                    }
+                    pipeReader.AdvanceTo(buffer.Start, buffer.End);
+                    if (rs.IsCompleted)
                     {
                         break;
-                    }
-                    if (rs1_remain == rs1.Length || rs2_remain == rs2.Length)
-                    {
-                        break;
-                    }
-                    rs1_remain = rs1.Length;
-                    rs2_remain = rs2.Length;
-                    if (message is null)
-                    {
-                        continue;
-                    }
-                    try
-                    {
-                        int? len = message.Databody?.Encode(ref a1);
-                        byte[]? a = len is null ? null : a1[..len.Value].ToArray();
-                        RTCM3_MSM46? c = message.Databody as RTCM3_MSM46;
-                        byte[]? b = a is null ? null : t.Slice(t.Length - a.Length, a.Length).ToArray();
-                        if (t.Length - a?.Length > 0)
-                        {
-                            string s = BitConverter.ToString(t.Slice(0, t.Length - a!.Length).ToArray()).Replace('-', ' ');
-                            var max_show_len = 10;
-                            if (s.Length < max_show_len)
-                            {
-                                Console.WriteLine($"skip bytes: {s}");
-                            }
-                            else
-                            {
-                                Console.WriteLine($"skip {s.Length} bytes: {s[..(max_show_len * 3)]}...");
-                            }
-
-                        }
-                        bool? f = b is null ? null : a?.SequenceEqual(b);
-                        if (f is null)
-                        {
-                            Console.WriteLine($"skip RTCM3 {message.MessageType}: Unsupported message type");
-                        }
-                        else if (f == true)
-                        {
-                            Console.WriteLine($"test RTCM3 {message.MessageType}");
-                        }
-                        if (f == false)
-                        {
-                            Console.WriteLine("test failed");
-                        }
-                        Assert.IsTrue(f ?? true);
-
-                    }
-                    catch (NotImplementedException)
-                    {
-                        Console.WriteLine($"skip RTCM3 {message.MessageType}: NotImplementedException");
-                        continue;
                     }
                 }
             }

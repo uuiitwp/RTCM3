@@ -1,4 +1,5 @@
 ﻿using RTCM3.Common;
+using System.Buffers;
 using System.Text;
 
 namespace RTCM3.RTCM3Message
@@ -10,7 +11,7 @@ namespace RTCM3.RTCM3Message
         public string AntDescriptor;
         public uint AntSetupID;
 
-        public RTCM3_1007(ReadOnlySpan<byte> databody)
+        public RTCM3_1007(ReadOnlySequence<byte> databody)
         {
             int i = 0;
             int length;
@@ -21,7 +22,7 @@ namespace RTCM3.RTCM3Message
             AntDescriptorCounter = BitOperation.GetBitsUint(databody, i, length = 8);
             i += length;
             int antDescriptorPosition = i / 8;
-            AntDescriptor = Encoding.ASCII.GetString(databody[antDescriptorPosition..(int)(antDescriptorPosition + AntDescriptorCounter)]);
+            AntDescriptor = Encoding.ASCII.GetString(databody.Slice(antDescriptorPosition, AntDescriptorCounter));
             i += (int)AntDescriptorCounter * 8;
             AntSetupID = BitOperation.GetBitsUint(databody, i, 8);
         }

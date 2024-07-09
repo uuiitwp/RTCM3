@@ -1,4 +1,7 @@
 ﻿using RTCM3.Common;
+using System;
+using System.Buffers;
+using System.Runtime.InteropServices;
 
 namespace RTCM3.RTCM3Message
 {
@@ -24,7 +27,8 @@ namespace RTCM3.RTCM3Message
             uint bodyBytesLength = GetBodyBytesLength(bodyBitsLength);
             BitOperation.SetBitsUint(ref result, 0, 8, Preamble);
             BitOperation.SetBitsUint(ref result, 14, 10, bodyBytesLength);
-            BitOperation.SetBitsUint(ref result, RTCM3HeaderBitsLength + ((int)bodyBytesLength * 8), CRC24QBitsLength, (uint)CRC24Q.Get(result[..(int)(bodyBytesLength + 3)]));
+            var s = result[..(int)(bodyBytesLength + 3)];
+            BitOperation.SetBitsUint(ref result, RTCM3HeaderBitsLength + ((int)bodyBytesLength * 8), CRC24QBitsLength, (uint)CRC24Q.Get(s));
 
         }
         public abstract int Encode(ref Span<byte> bytes);

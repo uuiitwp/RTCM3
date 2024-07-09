@@ -1,4 +1,5 @@
 ﻿using RTCM3.Common;
+using System.Buffers;
 
 namespace RTCM3.RTCM3Message
 {
@@ -11,7 +12,7 @@ namespace RTCM3.RTCM3Message
         public uint[] plock;
         public uint[] half;
         public uint[] cnr;
-        public RTCM3_MSM46(ReadOnlySpan<byte> databody) : base(databody)
+        public RTCM3_MSM46(ReadOnlySequence<byte> databody) : base(databody)
         {
             Range = new double[SatNumber];
             RangeM = new double[SatNumber];

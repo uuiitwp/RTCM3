@@ -1,4 +1,5 @@
 ﻿using RTCM3.Common;
+using System.Buffers;
 
 namespace RTCM3.RTCM3Message
 {
@@ -13,7 +14,7 @@ namespace RTCM3.RTCM3Message
 
         private const int DataBitsLength = 156;
 
-        public RTCM3_1032(ReadOnlySpan<byte> databody)
+        public RTCM3_1032(ReadOnlySequence<byte> databody)
         {
             int i = 0;
             int length;

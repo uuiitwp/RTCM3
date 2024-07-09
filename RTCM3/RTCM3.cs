@@ -11,7 +11,7 @@ namespace RTCM3
         private readonly uint DataBytesLength;
         public readonly uint MessageType;
         public readonly RTCM3Base? Databody;
-        public RTCM3(ReadOnlySpan<byte> bytes, bool checkCRC24Q = true, bool decode = true)
+        public RTCM3(ReadOnlySequence<byte> bytes, bool checkCRC24Q = true, bool decode = true)
         {
             if (bytes.Length < 6)
             {
@@ -39,7 +39,7 @@ namespace RTCM3
             MessageType = BitOperation.GetBitsUint(bytes, 24, 12);
             if (decode)
             {
-                ReadOnlySpan<byte> body = bytes[3..(int)(3 + DataBytesLength)];
+                var body = bytes.Slice(3,(int)(3 + DataBytesLength));
                 Databody = MessageType switch
                 {
                     1001 => new RTCM3_1001(body),
@@ -79,10 +79,10 @@ namespace RTCM3
             }
         }
 
-        private bool ValidCRC24Q(ReadOnlySpan<byte> bytes)
+        private bool ValidCRC24Q(ReadOnlySequence<byte> bytes)
         {
             int crcposition = (int)(DataBytesLength + 3);
-            return CRC24Q.Get(bytes[..crcposition]) == BitOperation.GetBitsUint(bytes[crcposition..], 0, 24);
+            return CRC24Q.Get(bytes.Slice(0, crcposition)) == BitOperation.GetBitsUint(bytes.Slice(crcposition), 0, 24);
         }
         public static RTCM3? Filter(ref ReadOnlySequence<byte> buffer)
         {
@@ -91,85 +91,38 @@ namespace RTCM3
             if (reader.TryAdvanceTo((byte)Preamble, false))
             {
                 long Consumed = reader.Consumed;
-                Span<byte> h1 = stackalloc byte[3];
-                if (!reader.TryCopyTo(h1))
+                buffer = buffer.Slice(Consumed);
+                if (reader.Remaining < 3)
                 {
-                    buffer = buffer.Slice(Consumed);
                     return null;
                 }
-                if (BitOperation.GetBitsUint(h1, 8, 6) == Reserved)
+
+                if (BitOperation.GetBitsUint(buffer, 8, 6) == Reserved)
                 {
-                    uint len = BitOperation.GetBitsUint(h1, 14, 10) + 6;
-                    h1 = stackalloc byte[(int)len];
-                    if (!reader.TryCopyTo(h1))
+                    uint len = BitOperation.GetBitsUint(buffer, 14, 10) + 6;
+                    if (reader.Remaining < len)
                     {
-                        buffer = buffer.Slice(Consumed);
                         return null;
                     }
                     try
                     {
-                        result = new RTCM3(h1);
-                        buffer = buffer.Slice(len + Consumed);
+                        result = new RTCM3(buffer);
+                        buffer = buffer.Slice(len, 0);
                     }
                     catch
                     {
                         result = null;
-                        buffer = buffer.Slice(1 + Consumed);
+                        buffer = buffer.Slice(1, 0);
                     }
                 }
                 else
                 {
-                    buffer = buffer.Slice(3 + Consumed);
+                    buffer = buffer.Slice(3, 0);
                 }
             }
             else
             {
-                buffer = buffer.Slice(buffer.Length);
-            }
-            return result;
-        }
-        public static RTCM3? Filter1(ref ReadOnlySequence<byte> buffer, out Span<byte> h1)
-        {
-            RTCM3? result = null;
-            SequenceReader<byte> reader = new(buffer);
-            h1 = null;
-            if (reader.TryAdvanceTo((byte)Preamble, false))
-            {
-                long Consumed = reader.Consumed;
-                h1 = new byte[3];
-                if (!reader.TryCopyTo(h1))
-                {
-                    buffer = buffer.Slice(Consumed);
-                    return null;
-                }
-                if (BitOperation.GetBitsUint(h1, 8, 6) == Reserved)
-                {
-                    uint len = BitOperation.GetBitsUint(h1, 14, 10) + 6;
-                    h1 = new byte[(int)len];
-                    if (!reader.TryCopyTo(h1))
-                    {
-                        buffer = buffer.Slice(Consumed);
-                        return null;
-                    }
-                    try
-                    {
-                        result = new RTCM3(h1);
-                        buffer = buffer.Slice(len + Consumed);
-                    }
-                    catch
-                    {
-                        result = null;
-                        buffer = buffer.Slice(1 + Consumed);
-                    }
-                }
-                else
-                {
-                    buffer = buffer.Slice(3 + Consumed);
-                }
-            }
-            else
-            {
-                buffer = buffer.Slice(buffer.Length);
+                buffer = buffer.Slice(buffer.Length, 0);
             }
             return result;
         }
