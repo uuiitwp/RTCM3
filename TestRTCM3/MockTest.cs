@@ -50,7 +50,7 @@ namespace TestRTCM3
                             Console.WriteLine($"RTCM_{message.MessageType} Encode method is not implemented.");
                         }
                     }
-                    pipeReader.AdvanceTo(buffer.Start, buffer.End);
+                    pipeReader.AdvanceTo(buffer.Start);
                     if (rs.IsCompleted)
                     {
                         break;
