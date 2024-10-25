@@ -10,7 +10,7 @@ namespace TestRTCM3
             DirectoryInfo directoryInfo = new("RTCM3_bin");
             return directoryInfo.GetFiles("*.rtcm3", SearchOption.AllDirectories);
         }
-        [TestMethod]
+        [TestMethod, Timeout(10000)]
         public void DecodeEncodeRTCM3()
         {
             Span<byte> span = stackalloc byte[2048];
@@ -61,7 +61,7 @@ namespace TestRTCM3
         }
 
 
-        [TestMethod]
+        [TestMethod, Timeout(10000)]
         public void DecodeSyncMSM()
         {
             foreach (FileInfo file in GetFiles())
