@@ -2,6 +2,10 @@
 
 This project is an RTCM3 encoder/decoder written in C#.
 
+## Releases
+
+https://www.nuget.org/packages/RTCM3
+
 ## How to Use
 
 ```C#
