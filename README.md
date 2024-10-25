@@ -37,7 +37,7 @@ while (true)
             Console.WriteLine($"RTCM_{message.MessageType} Encode method is not implemented.");
         }
     }
-    pipeReader.AdvanceTo(buffer.Start, buffer.Start); // important
+    pipeReader.AdvanceTo(buffer.Start, buffer.End); // important
     if (rs.IsCompleted)
     {
         break;
