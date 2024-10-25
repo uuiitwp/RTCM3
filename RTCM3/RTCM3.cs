@@ -90,6 +90,8 @@ namespace RTCM3
             SequenceReader<byte> reader = new(buffer);
             if (reader.TryAdvanceTo((byte)Preamble, false))
             {
+                long Consumed = reader.Consumed;
+                buffer = buffer.Slice(Consumed);
                 if (reader.Remaining < 3)
                 {
                     return null;
@@ -105,22 +107,22 @@ namespace RTCM3
                     try
                     {
                         result = new RTCM3(buffer);
-                        buffer = buffer.Slice(len);
+                        buffer = buffer.Slice(len, 0);
                     }
                     catch
                     {
                         result = null;
-                        buffer = buffer.Slice(1);
+                        buffer = buffer.Slice(1, 0);
                     }
                 }
                 else
                 {
-                    buffer = buffer.Slice(3);
+                    buffer = buffer.Slice(3, 0);
                 }
             }
             else
             {
-                buffer = buffer.Slice(buffer.Length);
+                buffer = buffer.Slice(buffer.Length, 0);
             }
             return result;
         }
