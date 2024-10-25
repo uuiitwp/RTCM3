@@ -92,6 +92,7 @@ namespace RTCM3
             {
                 if (reader.Remaining < 3)
                 {
+                    buffer = buffer.Slice(buffer.Length);
                     return null;
                 }
 
@@ -100,6 +101,7 @@ namespace RTCM3
                     uint len = BitOperation.GetBitsUint(buffer, 14, 10) + 6;
                     if (reader.Remaining < len)
                     {
+                        buffer = buffer.Slice(buffer.Length);
                         return null;
                     }
                     try
