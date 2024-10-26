@@ -130,6 +130,10 @@ namespace RTCM3.RTCM3Message
             {
                 return GNSSSystem.BEIDOU;
             }
+            else if (SBASMessages.Contains(MessageType))
+            {
+                return GNSSSystem.SBAS;
+            }
             else
             {
                 return GNSSSystem.None;
