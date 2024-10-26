@@ -91,10 +91,12 @@ namespace RTCM3
             if (reader.TryAdvanceTo((byte)Preamble, false))
             {
                 long Consumed = reader.Consumed;
+                // first preamble to end
                 buffer = buffer.Slice(Consumed);
                 if (reader.Remaining < 3)
                 {
-                    buffer = buffer.Slice(buffer.Length);
+                    // RTCM3 package is not complete 
+                    // we want more data 
                     return null;
                 }
 
@@ -103,27 +105,32 @@ namespace RTCM3
                     uint len = BitOperation.GetBitsUint(buffer, 14, 10) + 6;
                     if (reader.Remaining < len)
                     {
-                        buffer = buffer.Slice(buffer.Length);
+                        // RTCM3 package is not complete 
+                        // we want more data 
                         return null;
                     }
                     try
                     {
                         result = new RTCM3(buffer);
+                        // go to current RTCM3 package end
                         buffer = buffer.Slice(len, 0);
                     }
                     catch
                     {
+                        // it is not RTCM3 package, skip preamble, reserved and len (24 bits)
                         result = null;
-                        buffer = buffer.Slice(1, 0);
+                        buffer = buffer.Slice(3, 0);
                     }
                 }
                 else
                 {
-                    buffer = buffer.Slice(3, 0);
+                    // it is not RTCM3 package, skip preamble
+                    buffer = buffer.Slice(1, 0);
                 }
             }
             else
             {
+                // preamble not found, go to end
                 buffer = buffer.Slice(buffer.Length, 0);
             }
             return result;

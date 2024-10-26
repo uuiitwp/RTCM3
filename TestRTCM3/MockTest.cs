@@ -5,30 +5,50 @@ namespace TestRTCM3
     [TestClass]
     public class MockTest
     {
-        public static FileInfo[] GetFiles()
+        private static FileInfo[] GetFiles()
         {
             DirectoryInfo directoryInfo = new("RTCM3_bin");
             return directoryInfo.GetFiles("*.rtcm3", SearchOption.AllDirectories);
         }
-        [TestMethod, Timeout(10000)]
-        public void DecodeEncodeRTCM3()
+
+        [TestMethod, Timeout(100000)]
+        public void DecodeEncodeRTCM3_01()
         {
+            DecodeEncodeRTCM3(out var MessageCount);
+            Console.WriteLine($"Total Message Count is {MessageCount}");
+        }
+
+        [TestMethod, Timeout(100000)]
+        public void DecodeEncodeRTCM3_02()
+        {
+            // pipeReader.ReadAsync does not read a complete package
+            StreamPipeReaderOptions streamPipeReaderOptions = new(bufferSize: 1);
+            DecodeEncodeRTCM3(out var MessageCount, streamPipeReaderOptions);
+            Console.WriteLine($"Total Message Count is {MessageCount}");
+            DecodeEncodeRTCM3(out var MessageCount1);
+            Console.WriteLine($"Total Message Count is {MessageCount1}");
+            Assert.AreEqual(MessageCount, MessageCount1);
+        }
+
+
+        private void DecodeEncodeRTCM3(out long MessageCount, StreamPipeReaderOptions? streamPipeReaderOptions = null)
+        {
+            MessageCount = 0L;
             Span<byte> span = stackalloc byte[2048];
             foreach (FileInfo file in GetFiles())
             {
                 Console.WriteLine($"file name: {file.Name}");
                 using FileStream fs = File.OpenRead(file.FullName);
-                PipeReader pipeReader = PipeReader.Create(fs);
+                PipeReader pipeReader = PipeReader.Create(fs, streamPipeReaderOptions);
                 while (true)
                 {
                     ReadResult rs = pipeReader.ReadAsync().AsTask().Result;
                     ReadOnlySequence<byte> buffer = rs.Buffer;
                     ReadOnlySequence<byte> read = buffer.Slice(0);
-
                     RTCM3.RTCM3? message = RTCM3.RTCM3.Filter(ref buffer);
-
                     if (message != null)
                     {
+                        MessageCount++;
                         try
                         {
                             if (message.Databody != null)
@@ -50,9 +70,10 @@ namespace TestRTCM3
                             Console.WriteLine($"RTCM_{message.MessageType} Encode method is not implemented.");
                         }
                     }
-                    pipeReader.AdvanceTo(buffer.Start);
+                    pipeReader.AdvanceTo(buffer.Start, buffer.End);
                     if (rs.IsCompleted)
                     {
+                        Assert.IsTrue(MessageCount > 0, "MessageCount is zeor");
                         break;
                     }
                 }
@@ -61,7 +82,7 @@ namespace TestRTCM3
         }
 
 
-        [TestMethod, Timeout(10000)]
+        [TestMethod, Timeout(100000)]
         public void DecodeSyncMSM()
         {
             foreach (FileInfo file in GetFiles())
