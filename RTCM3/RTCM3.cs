@@ -117,9 +117,9 @@ namespace RTCM3
                     }
                     catch
                     {
-                        // it is not RTCM3 package, skip preamble, reserved and len (24 bits)
+                        // it is not RTCM3 package, skip preamble
                         result = null;
-                        buffer = buffer.Slice(3, 0);
+                        buffer = buffer.Slice(1, 0);
                     }
                 }
                 else
