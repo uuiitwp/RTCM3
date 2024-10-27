@@ -11,9 +11,9 @@ namespace RTCM3.Common
             {
                 throw new IndexOutOfRangeException();
             }
+            SequenceReader<byte> sequenceReader = new(buff);
             for (int i = pos; i < pos + length; i++)
             {
-                SequenceReader<byte> sequenceReader = new(buff);
                 sequenceReader.TryPeek(i / 8, out byte value);
                 result = (result << 1) + ((uint)value >> 7 - i % 8 & 1u);
             }
@@ -70,9 +70,9 @@ namespace RTCM3.Common
             {
                 throw new IndexOutOfRangeException();
             }
+            SequenceReader<byte> sequenceReader = new(buff);
             for (int i = pos; i < pos + length; i++)
             {
-                SequenceReader<byte> sequenceReader = new(buff);
                 sequenceReader.TryPeek(i / 8, out byte value);
                 result = (result << 1) + ((ulong)value >> 7 - i % 8 & 1ul);
             }

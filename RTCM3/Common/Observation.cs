@@ -2,7 +2,7 @@
 
 namespace RTCM3.Common
 {
-    public struct Observation
+    public class Observation
     {
         public GNSSSystem GNSSSystem;
         public GNSSTime GNSSTime;
@@ -16,7 +16,7 @@ namespace RTCM3.Common
         public double doppler;
 
 
-        public override readonly string ToString()
+        public override string ToString()
         {
             return $"{GNSSSystemMethod.GetGNSSSystemChar(GNSSSystem)}{satId:00} {Frequency.GetRinexCode(GNSSSystem, sigId)} CNR={cnr:00}";
         }
