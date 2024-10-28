@@ -88,24 +88,18 @@ namespace TestRTCM3
         {
             foreach (FileInfo file in GetFiles())
             {
+                Console.WriteLine($"file name: {file.Name}");
                 SyncMSMsFilter Filter = new();
-                byte[] bs = File.ReadAllBytes(file.FullName);
-                ReadOnlySequence<byte> rs = new(bs);
-                long rs_remain = 0;
+                using FileStream fs = File.OpenRead(file.FullName);
+                PipeReader pipeReader = PipeReader.Create(fs);
                 while (true)
                 {
-                    if (rs.IsEmpty)
-                    {
-                        break;
-                    }
-                    if (rs_remain == rs.Length)
-                    {
-                        break;
-                    }
-                    rs_remain = rs.Length;
-                    RTCM3.RTCM3[]? msms = Filter.Filter(ref rs);
+                    ReadResult rs = pipeReader.ReadAsync().AsTask().Result;
+                    ReadOnlySequence<byte> buffer = rs.Buffer;
+                    RTCM3.RTCM3[]? msms = Filter.Filter(ref buffer);
                     if (msms is not null)
                     {
+                        Console.WriteLine();
                         Assert.AreEqual((msms.Last().Databody as RTCM3_MSM)?.Sync, 0u);
                         foreach (RTCM3.RTCM3 msm in msms[..^1])
                         {
@@ -118,8 +112,15 @@ namespace TestRTCM3
                             try
                             {
                                 Observation[]? o = m?.GetObservations();
+                                if (o is not null && m is not null)
+                                {
+                                    foreach (var obs in o)
+                                    {
+                                        Console.WriteLine($"StationID={m.StationID} GNSSTime={obs.GNSSTime} {obs} CarrierPhase={obs.carrierPhase} PseudoRange={obs.pseudoRange}");
+                                    }
+                                }
                                 IEnumerable<GNSSTime>? t = o?.Select(x => x.GNSSTime);
-                                if (t != null)
+                                if (t is not null)
                                 {
                                     result.AddRange(t);
                                 }
@@ -131,6 +132,11 @@ namespace TestRTCM3
                         }
                         bool f = result.All(x => x.Equals(result.First()));
                         Assert.IsTrue(f);
+                    }
+                    pipeReader.AdvanceTo(buffer.Start, buffer.End);
+                    if (rs.IsCompleted)
+                    {
+                        break;
                     }
                 }
             }
