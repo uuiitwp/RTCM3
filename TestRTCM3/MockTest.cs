@@ -48,6 +48,7 @@ namespace TestRTCM3
                     RTCM3.RTCM3? message = RTCM3.RTCM3.Filter(ref buffer);
                     if (message != null)
                     {
+                        Console.WriteLine($"RTCM3_{message.MessageType} decoded");
                         MessageCount++;
                         try
                         {
