@@ -24,28 +24,37 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="RTCM3_bin\test0.rtcm3">
+    <None Update="RTCM3_bin\test00.rtcm3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="RTCM3_bin\test1.rtcm3">
+    <None Update="RTCM3_bin\test01.rtcm3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="RTCM3_bin\test2.rtcm3">
+    <None Update="RTCM3_bin\test10.rtcm3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="RTCM3_bin\test3.rtcm3">
+    <None Update="RTCM3_bin\test02.rtcm3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="RTCM3_bin\test4.rtcm3">
+    <None Update="RTCM3_bin\test03.rtcm3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="RTCM3_bin\test5.rtcm3">
+    <None Update="RTCM3_bin\test04.rtcm3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="RTCM3_bin\test6.rtcm3">
+    <None Update="RTCM3_bin\test05.rtcm3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="RTCM3_bin\test7.rtcm3">
+    <None Update="RTCM3_bin\test06.rtcm3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RTCM3_bin\test07.rtcm3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RTCM3_bin\test08.rtcm3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RTCM3_bin\test09.rtcm3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
