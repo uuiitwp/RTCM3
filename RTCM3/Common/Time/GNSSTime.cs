@@ -27,7 +27,7 @@
             DateTime start = StartTime.GetStartTime(sys);
             double dt = (DateTime - start).TotalSeconds;
             week = (int)(dt / Physics.Week);
-            tow = dt % Physics.Week + NanoSecond * Physics.NanoSecond;
+            tow = (dt % Physics.Week) + (NanoSecond * Physics.NanoSecond);
         }
 
         public override readonly string ToString()
@@ -54,11 +54,11 @@
                 GNSSTime gt = rt.ToGNSSTime();
                 double tow = GNSSEpochTime / 1000.0;
                 gt.GetWeekAndTow(sys, out int _week, out double _tow);
-                if (tow < _tow - Physics.Week / 2)
+                if (tow < _tow - (Physics.Week / 2))
                 {
                     tow += Physics.Week;
                 }
-                else if (tow > _tow + Physics.Week / 2)
+                else if (tow > _tow + (Physics.Week / 2))
                 {
                     tow -= Physics.Week;
                 }
@@ -71,12 +71,12 @@
                 uint dow = GNSSEpochTime << 2 >> 29;
                 double tod = (GNSSEpochTime << 5 >> 5) / 1000.0;
                 gt.GetWeekAndTow(GNSSSystem.GPS, out int _week, out double _tow);
-                double tow = dow * Physics.Day + tod;
-                if (tow < _tow - Physics.Week / 2)
+                double tow = (dow * Physics.Day) + tod;
+                if (tow < _tow - (Physics.Week / 2))
                 {
                     tow += Physics.Week;
                 }
-                else if (tow > _tow + Physics.Week / 2)
+                else if (tow > _tow + (Physics.Week / 2))
                 {
                     tow -= Physics.Week;
                 }
