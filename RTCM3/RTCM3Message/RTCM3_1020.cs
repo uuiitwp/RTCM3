@@ -116,7 +116,7 @@ namespace RTCM3.RTCM3Message
             i += length;
             taugps = BitOperation.GetBitsIntS(databody, i, length = 22) * Common.Math.pow2_m30;
             i += length;
-            ln3 = BitOperation.GetBitsUint(databody, i, length = 1);
+            ln5 = BitOperation.GetBitsUint(databody, i, length = 1);
             i += length;
             reserved = BitOperation.GetBitsUint(databody, i, 7);
         }

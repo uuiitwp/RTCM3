@@ -267,9 +267,9 @@ namespace RTCM3.Common
         public static int Get(ReadOnlySequence<byte> vs)
         {
             int crc = 0;
+            SequenceReader<byte> reader = new(vs);
             for (int i = 0; i < vs.Length; i++)
             {
-                SequenceReader<byte> reader = new(vs);
                 reader.TryPeek(i, out byte v);
                 crc = crc << 8 & 0xFFFFFF ^ TABLE_CRC24Q[crc >> 16 ^ v];
             }
